@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Product — how Plum works | Plum</title>
+<meta name="description" content="How Plum works: the Ask flow, receipts and model-free replay, honest refusals, the admin pages that exist today, and the architecture underneath.">
+<link rel="icon" type="image/svg+xml" href="plum-icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <a class="brand" href="index.html"><img class="logo" src="plum-primary-lockup.svg" alt="Plum" width="160" height="60"><span class="wordmark">Plum<span class="tick">&#10003;</span></span></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html" aria-current="page">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a class="cta" href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Early access</a>
+  </nav>
+</header>
+
+<main>
+
+<h1>How Plum works</h1>
+<p class="tagline">An AI analyst is only useful if you can trust the numbers.
+Plum's design starts from the assumption that you shouldn't have to trust —
+you should be able to check.</p>
+
+<h2>The Ask flow</h2>
+
+<p>You type a question — "What was total revenue?", "Compare June and July 2013
+revenue", "Which countries drive revenue?". What happens next is deliberately
+split in two:</p>
+
+<ol>
+  <li><strong>The model chooses, it never computes.</strong> The AI proposes a
+  tool call against a closed set of governed metrics (revenue, orders, AOV,
+  monthly revenue, cohort retention, customer LTV, product performance, repeat
+  rate). Invalid proposals are rejected and audited; the model gets one chance
+  to correct itself, then the system refuses deterministically.</li>
+  <li><strong>The deterministic layer computes.</strong> The metric's canonical
+  SQL — written down once, in a governed definitions document — runs against the
+  warehouse over a read-only connection. The result is written into a receipt:
+  the SQL, the parameters, the rows, the warehouse build identity, and content
+  hashes over all of it.</li>
+</ol>
+
+<p>The answer you see has two visibly separate sections. <strong>RECEIPTED
+FACTS</strong> is rendered by code directly from the stored receipts — the model
+cannot edit it. <strong>INTERPRETATION</strong> is model prose, labeled "model,
+not receipted", and a post-check verifies every number in it appears in the
+receipted facts. If the model invents a number, the draft is rejected and
+regenerated; two strikes and a deterministic fallback ships instead. This has
+caught a real violation in testing — the bad draft never shipped.</p>
+
+<h2>Receipts and replay, simply</h2>
+
+<p>Every receipted fact carries a receipt id and a hash, like
+<code>rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a</code>.
+Replaying a receipt re-executes its exact SQL against the warehouse —
+<em>no model anywhere in the loop</em> — and grades the result:</p>
+
+<table>
+  <tr><th>Verdict</th><th>Meaning</th></tr>
+  <tr><td><strong>MATCH</strong></td><td>Same SQL, same data, same numbers. The answer still holds.</td></tr>
+  <tr><td><strong>STALE</strong></td><td>The warehouse content changed since the receipt was written; the receipt was honest for the data it saw.</td></tr>
+  <tr><td><strong>FAIL</strong></td><td>The receipt does not survive re-execution — including receipts someone edited to lie coherently.</td></tr>
+  <tr><td><strong>ERROR</strong></td><td>The receipt file is malformed; the grader refuses to grade rather than guess.</td></tr>
+</table>
+
+<p>This is tested adversarially: the verification gate doctors receipts five
+different ways (edit the rows, recompute the hashes coherently, tamper with
+derived values, delete caveats) and asserts each forgery fails with exactly the
+predicted signature. Commands and observed results are on the
+<a href="evidence.html">evidence page</a>.</p>
+
+<h2>Honest refusal</h2>
+
+<p>When the data to answer a question doesn't exist, Plum says so — in
+governed text quoted from the metric documentation, not model improvisation.
+Verbatim, from a real run on 2026-06-13:</p>
+
+<div class="receipt">
+  <div class="label">Real output &middot; <code>python app\scripts\plum_ask.py "Show me the conversion funnel"</code></div>
+<pre>RECEIPTED FACTS
+===============
+(no receipts this turn)
+
+REFUSAL (governed text, not model prose)
+========================================
+Not yet supported (session_funnel), per app/docs/metrics.md: visits → product views → add-to-cart → checkout → purchase conversion. Requires an event-stream connector (storefront analytics). No proxy is acceptable: order data alone cannot recover pre-purchase steps.
+
+governed source: app/docs/metrics.md</pre>
+</div>
+
+<p>No proxy metric, no plausible-sounding guess. Order data alone cannot recover
+pre-purchase funnel steps, so the product refuses rather than approximates.</p>
+
+<h2>The admin app today</h2>
+
+<p>Five server-rendered pages exist now. Every number on them is queried live at
+render time using the canonical SQL from the governed metric definitions, and
+each KPI is footnoted with its metric id.</p>
+
+<table>
+  <tr><th>Page</th><th>What it shows</th></tr>
+  <tr><td><strong>Overview</strong></td><td>Headline KPIs (total revenue, orders, AOV, repeat-rate split, LTV distribution) plus a build-identity panel: which warehouse build produced these numbers, over what date window.</td></tr>
+  <tr><td><strong>Revenue</strong></td><td>Monthly revenue table and chart (server-side SVG, no JS), with partial-month caveats quoted from the metric definition.</td></tr>
+  <tr><td><strong>Cohorts</strong></td><td>The full cohort-retention matrix; sparse cells are labeled "zero, not missing", with the governed cohort definition quoted on the page.</td></tr>
+  <tr><td><strong>Ask</strong></td><td>The chat surface. Renders the exact two-section answer — receipted facts with receipt ids and hashes, interpretation visibly tagged as model prose — plus a per-receipt replay command and the post-check status.</td></tr>
+  <tr><td><strong>Audit</strong></td><td>The append-only audit log: every query, every tool call, every rejection and refusal, with the warehouse build id on each row.</td></tr>
+</table>
+
+<div class="honest">
+  <p><strong>What deliberately doesn't exist:</strong> there are no Funnel,
+  Experiments, or Insights pages — not even mock ones. The nav carries a single
+  greyed, non-clickable note: "Funnel — requires event data". A page ships when
+  the capability is real, not before.</p>
+</div>
+
+<h2>Not supported yet</h2>
+
+<ul>
+  <li><strong>Session funnel</strong> (visits → views → cart → checkout →
+  purchase) — requires an event-stream connector. Refused honestly today, as
+  shown above.</li>
+  <li><strong>Promo performance</strong> (discount uptake, promo ROI) — requires
+  a promotions/discounts source; the current demo extract has none.</li>
+  <li><strong>Store connectors</strong> — the warehouse currently builds from
+  CSV extracts. A Shopify connector is planned as the first integration; it does
+  not exist yet, and we won't describe it as if it did.</li>
+</ul>
+
+<h2>Architecture, for technical readers</h2>
+
+<h3>A real layered warehouse</h3>
+<p>Store data lands in a medallion warehouse on PostgreSQL:
+<strong>bronze</strong> (raw, as extracted), <strong>silver</strong> (cleansed —
+deduplication, invalid-date nulling, amount repairs, all rules documented),
+<strong>gold</strong> (a star schema plus analytics views: monthly revenue,
+cohort retention, customer LTV, product performance, repeat rate). Rebuilds are
+single-transaction and reproducible: every build records its identity and a
+deterministic content fingerprint, so two builds of the same data are provably
+identical. A 33-check quality suite guards each layer, and the whole warehouse
+was ported DuckDB → PostgreSQL with every metric verified exact across
+engines.</p>
+
+<h3>Governed metrics, one source of truth</h3>
+<p>Every metric the agent can cite is defined once — id, plain-language
+definition, exact formula, grain, lineage, canonical SQL, and real caveats
+(including the dataset's known gaps, like 19 invalid-date sales lines worth
+4,992 of revenue, documented rather than hidden). Definitions change only via
+dated decision entries. If a question needs a formula that isn't governed,
+that's a new-definition request — not a judgment call the model gets to make.</p>
+
+<h3>The model never touches data</h3>
+<p>The law of the system: the model proposes tool calls and writes prose;
+everything else is deterministic code. SQL comes from the governed registry,
+runs over a connection that is read-only twice over (database-level read-only
+transactions plus an SQL gate allowing single SELECT statements only), with
+statement timeouts and row caps. Every call, rejection, and refusal is written
+to an append-only audit log. The receipts machinery itself is tested by an
+adversarial verification gate — interception tests prove the receipt contains
+the very objects the query executed, fault-injection proves forgeries fail,
+renderer tests prove what's stored is what's shown.</p>
+
+<p class="muted">All of the above is checkable: <a href="evidence.html">every
+claim, with its command, on the evidence page</a>.</p>
+
+</main>
+
+<footer class="site">
+  <img class="footer-logo" src="plum-lockup-dark-white.svg" alt="Plum" width="180" height="75">
+  <p><strong>Plum is pre-launch.</strong> Nothing on this site claims traction
+  we don't have. Every product claim is reproducible — commands and observed
+  results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
+  a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Contact / early access</a>
+  </nav>
+</footer>
+
+</body>
+</html>

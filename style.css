@@ -1,0 +1,229 @@
+/* Plum marketing site — shared stylesheet.
+   Branding: the Plum palette on a warm off-white paper, keeping the printed-
+   receipt feel that is the product's whole point — but dressed in the brand:
+   Plum primary, Deep for dark headings/footer, Clay for calls to action, Leaf
+   for verified/positive proof. No frameworks, no network fonts, no JS. */
+
+:root {
+  /* brand palette */
+  --plum: #7E2F8E;        /* primary brand */
+  --plum-dark: #5f2069;   /* darker plum for hover / pressed states */
+  --deep: #4A1A57;        /* dark headings, dark sections, footer */
+  --deep-2: #3a1445;      /* deeper still, for gradient depth */
+  --clay: #E0743F;        /* warm CTA / secondary accent */
+  --clay-dark: #c45c29;   /* clay hover */
+  --leaf: #4E8A57;        /* positive / verified / checkmarks */
+  --leaf-dark: #3c6e44;   /* leaf hover / text on light */
+
+  /* surfaces */
+  --paper: #faf7fb;       /* faint plum-tinted off-white */
+  --card: #ffffff;
+  --ink: #221426;         /* near-black with a plum undertone */
+  --ink-soft: #5e5066;
+  --rule: #e6dcea;        /* soft plum-tinted hairline */
+  --rule-strong: #cdbcd4;
+  --code-bg: #f3ecf6;     /* tinted code chip */
+
+  --mono: Consolas, "Cascadia Mono", "Courier New", monospace;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: system-ui, "Segoe UI", Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 1.0625rem;
+  line-height: 1.65;
+}
+
+h1, h2, h3 { font-family: var(--serif); line-height: 1.25; color: var(--deep); }
+h1 { font-size: 2.4rem; margin: 0 0 0.5rem; }
+h2 { font-size: 1.6rem; margin: 2.5rem 0 0.75rem; border-bottom: 2px solid var(--rule); padding-bottom: 0.35rem; }
+h3 { font-size: 1.2rem; margin: 1.75rem 0 0.5rem; }
+
+a { color: var(--plum); }
+a:hover { color: var(--clay-dark); }
+
+code, pre {
+  font-family: var(--mono);
+  font-size: 0.875rem;
+}
+
+code {
+  background: var(--code-bg);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  padding: 0.08rem 0.3rem;
+  overflow-wrap: anywhere;
+}
+
+pre {
+  background: var(--card);
+  border: 1px dashed var(--rule-strong);
+  border-radius: 4px;
+  padding: 1rem 1.25rem;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+pre code { background: none; border: none; padding: 0; }
+
+/* layout */
+header.site, main, footer.site > * { max-width: 56rem; margin-left: auto; margin-right: auto; }
+header.site, main { padding: 0 1.25rem; }
+main { padding-bottom: 3rem; }
+
+/* nav */
+header.site {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  padding-top: 1.25rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--plum);
+  margin-bottom: 2.5rem;
+}
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--serif);
+  font-weight: bold;
+  font-size: 1.35rem;
+  color: var(--deep);
+  text-decoration: none;
+  line-height: 1;
+}
+.brand .logo { height: 2rem; width: auto; display: block; }
+/* the wordmark text stays in the DOM for screen readers; the lockup carries it visually */
+.brand .wordmark { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.brand .tick { color: var(--leaf); }
+header.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; align-items: center; margin-left: auto; }
+header.site nav a { color: var(--ink); text-decoration: none; font-size: 0.95rem; }
+header.site nav a:hover { color: var(--plum); }
+header.site nav a[aria-current="page"] {
+  color: var(--plum);
+  border-bottom: 2px solid var(--clay);
+  font-weight: 600;
+}
+
+.cta {
+  display: inline-block;
+  background: var(--clay);
+  color: #fff !important;
+  text-decoration: none;
+  padding: 0.35rem 0.9rem;
+  border-radius: 5px;
+  font-weight: 600;
+}
+.cta:hover { background: var(--clay-dark); color: #fff !important; }
+.cta.big { font-size: 1.1rem; padding: 0.6rem 1.4rem; }
+
+/* hero */
+.hero { margin: 1rem 0 2.5rem; }
+.hero h1 { color: var(--deep); }
+.hero p.tagline { font-size: 1.25rem; color: var(--ink-soft); max-width: 38rem; margin: 0.5rem 0 1.25rem; }
+.prelaunch {
+  display: inline-block;
+  font-size: 0.85rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--clay-dark);
+  border: 1px solid var(--clay);
+  border-radius: 3px;
+  padding: 0.1rem 0.5rem;
+  margin-bottom: 1rem;
+}
+
+/* three-up feature row */
+.threeup { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.25rem; margin: 1.5rem 0; }
+.threeup section {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-top: 3px solid var(--plum);
+  border-radius: 6px;
+  padding: 1rem 1.25rem;
+}
+.threeup h3 { margin-top: 0.25rem; }
+
+/* receipt / demo block */
+.receipt {
+  background: var(--card);
+  border: 1px dashed var(--rule-strong);
+  border-radius: 6px;
+  margin: 1rem 0;
+}
+.receipt .label {
+  font-family: var(--mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--deep);
+  border-bottom: 1px dashed var(--rule-strong);
+  padding: 0.45rem 1.25rem;
+}
+.receipt pre { border: none; margin: 0; background: none; }
+
+/* evidence table rows — Leaf left border marks them as verified proof */
+.claim-row {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--leaf);
+  border-radius: 6px;
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+}
+.claim-row h3 { margin-top: 0; }
+.claim-row dt {
+  font-size: 0.8rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-top: 0.9rem;
+}
+.claim-row dd { margin: 0.25rem 0 0; }
+.observed { color: var(--leaf-dark); font-weight: 600; }
+
+/* changelog */
+.changelog-note {
+  background: var(--card);
+  border-left: 4px solid var(--plum);
+  border-radius: 0 6px 6px 0;
+  padding: 0.6rem 1.25rem;
+  margin: 1rem 0 2rem;
+}
+.changelog li { margin: 1rem 0; }
+
+/* misc */
+.muted { color: var(--ink-soft); }
+.honest {
+  border-left: 4px solid var(--clay);
+  background: var(--card);
+  border-radius: 0 6px 6px 0;
+  padding: 0.6rem 1.25rem;
+  margin: 1.25rem 0;
+}
+table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+th, td { border: 1px solid var(--rule); padding: 0.45rem 0.7rem; text-align: left; vertical-align: top; }
+th { background: var(--code-bg); font-family: var(--serif); color: var(--deep); }
+
+/* footer — Deep dark section, white lockup, white text */
+footer.site {
+  background: var(--deep);
+  color: #e8dcec;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  padding-bottom: 2.5rem;
+  font-size: 0.92rem;
+}
+footer.site > * { padding-left: 1.25rem; padding-right: 1.25rem; }
+footer.site p { margin: 0 auto 0.75rem; max-width: 56rem; }
+footer.site strong { color: #fff; }
+footer.site a { color: #f0c9a3; }
+footer.site a:hover { color: #fff; }
+.footer-logo { height: 2.1rem; width: auto; display: block; margin-bottom: 1rem; }
+footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0.5rem auto 0; max-width: 56rem; }

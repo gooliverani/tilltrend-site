@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plum — the AI analyst for your store. Every answer shows its work.</title>
+<meta name="description" content="Plum is an AI analyst for ecommerce stores. Every number it gives you carries a receipt: the governed metric, the exact SQL, and a replayable hash. Pre-launch, built in public.">
+<link rel="icon" type="image/svg+xml" href="plum-icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <a class="brand" href="index.html"><img class="logo" src="plum-primary-lockup.svg" alt="Plum" width="160" height="60"><span class="wordmark">Plum<span class="tick">&#10003;</span></span></a>
+  <nav>
+    <a href="index.html" aria-current="page">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a class="cta" href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Early access</a>
+  </nav>
+</header>
+
+<main>
+
+<div class="hero">
+  <span class="prelaunch">Pre-launch &middot; built in public</span>
+  <h1>The AI analyst for your store.<br>Every answer shows its work.</h1>
+  <p class="tagline">Ask questions about your store in plain language. Every number
+  in the answer carries a receipt — the governed metric definition, the exact SQL,
+  and a hash you can replay without the AI in the loop.</p>
+  <a class="cta big" href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Request early access</a>
+</div>
+
+<div class="threeup">
+  <section>
+    <h3>Ask in plain language</h3>
+    <p>"What was total revenue?" "Compare June and July." "Which countries drive
+    revenue?" The model picks the right governed metric and writes the prose —
+    it never writes the SQL and never touches your data directly.</p>
+  </section>
+  <section>
+    <h3>Every answer carries a receipt</h3>
+    <p>Answers come in two visible sections: <strong>receipted facts</strong>
+    (numbers produced by governed SQL, each with a receipt id and hash) and
+    <strong>interpretation</strong> (model prose, clearly labeled as not
+    receipted). Any receipt can be replayed model-free; a doctored one fails.</p>
+  </section>
+  <section>
+    <h3>Your warehouse is yours</h3>
+    <p>Plum builds a real bronze/silver/gold warehouse from your store data —
+    on PostgreSQL you control, exportable, inspectable. Built so that leaving is
+    easy, which is exactly why you won't have to.</p>
+  </section>
+</div>
+
+<h2>What an answer actually looks like</h2>
+
+<p>This is not a mockup. It is the verbatim terminal output of the product
+answering "What was total revenue?" — run on 2026-06-13 against the demo
+warehouse. Reproduce it yourself with:</p>
+
+<pre><code>python app\scripts\plum_ask.py "What was total revenue?"</code></pre>
+
+<div class="receipt">
+  <div class="label">Real output &middot; demo dataset (public training data, 2010&ndash;2014 bike sales — not real merchants)</div>
+<pre>question: What was total revenue?
+turn:     turn_aba83b83e19d   mode: model   model: claude-haiku-4-5-20251001
+
+RECEIPTED FACTS
+===============
+(1) [run_metric] total_revenue (all time)  &lt;rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a&gt;
+  total_revenue = 29,356,250
+  caveat: Gross revenue only — the source has no cancellation/refund data.
+
+INTERPRETATION (model, not receipted)
+=====================================
+| Total revenue across all time is 29,356,250. This figure represents gross revenue; the underlying data does not include information on cancellations or refunds, so the actual net revenue may differ.
+
+receipts:
+  rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a
+replay:   python app\scripts\plum_replay.py rcp_c60c017f43c346328383448a66088735
+postcheck: PASS (attempts=1)</pre>
+</div>
+
+<p>The 29,356,250 is a property of the demo dataset, not a revenue claim about
+this product or anyone's business. Replaying that receipt re-executes the same
+governed SQL with no model involved and grades the result — observed verdict:
+<span class="observed">MATCH</span>. Doctor the receipt file and it fails.
+<a href="evidence.html">See every claim with its reproduction command &rarr;</a></p>
+
+<h2>Where this is honest by construction</h2>
+
+<div class="honest">
+  <p><strong>Plum is pre-launch.</strong> No merchant counts, no testimonials,
+  no revenue-lift percentages — we have none, so none appear on this site. What
+  we do have is a working product whose every claim is reproducible: the
+  <a href="evidence.html">evidence page</a> lists each one with the exact command
+  and the observed result, and the <a href="changelog.html">changelog</a> records
+  only shipped, verified work.</p>
+</div>
+
+<h2>Early access</h2>
+
+<p>We're looking for a small number of merchants to shape the first connectors
+(Shopify planned first). If "an analyst that shows its work" sounds like what
+your store is missing, write to us — a human reads every mail.</p>
+
+<p><a class="cta big" href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Request early access</a></p>
+
+</main>
+
+<footer class="site">
+  <img class="footer-logo" src="plum-lockup-dark-white.svg" alt="Plum" width="180" height="75">
+  <p><strong>Plum is pre-launch.</strong> Nothing on this site claims traction
+  we don't have. Every product claim is reproducible — commands and observed
+  results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
+  a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Contact / early access</a>
+  </nav>
+</footer>
+
+</body>
+</html>

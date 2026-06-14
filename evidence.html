@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Evidence — every claim, with its reproduction command | Plum</title>
+<meta name="description" content="Every factual claim Plum makes, paired with the exact command that reproduces it and the observed result. No metric without methodology.">
+<link rel="icon" type="image/svg+xml" href="plum-icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <a class="brand" href="index.html"><img class="logo" src="plum-primary-lockup.svg" alt="Plum" width="160" height="60"><span class="wordmark">Plum<span class="tick">&#10003;</span></span></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html" aria-current="page">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a class="cta" href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Early access</a>
+  </nav>
+</header>
+
+<main>
+
+<h1>Evidence</h1>
+<p class="tagline">The rule this site is built on: <strong>no claim without a
+receipt.</strong> Every factual statement about the product appears below with
+the exact command that reproduces it and the result we observed. Anything we
+can't prove yet is framed as design intent elsewhere on this site — never as
+achievement.</p>
+
+<h2>The dataset, honestly</h2>
+
+<p>Plum is pre-launch, so there is no merchant data. The demo warehouse is
+built from a <strong>public training dataset</strong> — CRM/ERP extracts of
+bicycle-and-accessories sales, order dates 2010-12-29 to 2014-01-28: 60,398
+sales lines, 27,659 orders, 18,484 customers, 295 products, total revenue
+29,356,250. Every number on this site describes <em>that dataset</em>, not any
+real business. The dataset's own defects (19 invalid-date sales lines carrying
+4,992 of revenue; 7 products with a missing category) are documented in the
+governed metric definitions and allow-listed in the quality checks at exactly
+their documented magnitude — they fail the build if they drift.</p>
+
+<p class="muted">All commands below run from the repository root against the
+built demo warehouse (PostgreSQL; <code>python app\warehouse\build.py</code>
+builds it from the seeded CSVs in about two seconds). Observation dates are
+when we last ran each command.</p>
+
+<h2>Claims and proofs</h2>
+
+<div class="claim-row">
+  <h3>Claim 1 — Every number in an answer is receipted, and the receipt replays without the model</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\scripts\plum_ask.py "What was total revenue?"
+python app\scripts\plum_replay.py rcp_c60c017f43c346328383448a66088735</code></pre></dd>
+    <dt>What you should observe</dt>
+    <dd>The answer's RECEIPTED FACTS section shows <code>total_revenue = 29,356,250</code>
+    with a receipt id and hash. Replaying that receipt re-executes the same SQL
+    with no model in the loop and grades it. (Your own run produces its own
+    receipt id; replay whatever id your run prints.)</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-13: verdict MATCH</span> — checks
+    <code>receipt_hash=ok, internal_result_hash=ok, reexecution_hash=ok,
+    row_count=ok, derived=ok</code>. Post-check on the model prose: PASS,
+    attempts=1.</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 2 — A doctored receipt fails replay</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\scripts\run_c8_gate.py</code></pre>
+    The fault-injection suite (<code>app\tests\test_c8_fault_injection.py</code>)
+    forges receipts five ways: edited rows; edited rows with the result hash
+    recomputed to match; a fully coherent forgery with <em>every</em> hash
+    recomputed; doctored derived values under a coherent hash; deleted caveats.</dd>
+    <dt>What you should observe</dt>
+    <dd>Each forgery fails with exactly its predicted signature — e.g. the fully
+    coherent forgery is caught by re-execution (<code>reexecution_hash</code>):
+    the lie is internally consistent but the warehouse disagrees. Malformed
+    receipt files grade ERROR instead of crashing the grader.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-13: PASS — all five doctoring layers
+    caught</span>, no false MATCH (9 fault-injection tests green). Earlier
+    end-to-end demo: a doctored receipt copy with coherently recomputed hashes
+    → FAIL on <code>reexecution_hash</code>.</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 3 — The adversarial verification gate is green: 6/6 suites</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\scripts\run_c8_gate.py</code></pre></dd>
+    <dt>What you should observe</dt>
+    <dd>Six suites against the live warehouse: interception (the SQL and rows in
+    every receipt are, by object identity, the ones the query layer executed —
+    across the full metric registry), fault injection (claim 2), renderer
+    (stored = shown; mutating results in memory after the call changes nothing
+    in the rendered answer), build-identity verdicts (including a real warehouse
+    rebuild mid-suite), the 33 warehouse quality checks, and the no-placeholder
+    guard. Exit code non-zero on any failure.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-13: GATE: all 6 suites passed</span>
+    (c8_interception 16.8s, c8_fault_injection 3.7s, c8_renderer 1.7s,
+    c1a_verdicts 4.6s, quality_checks 1.0s, no_placeholders 0.1s). The gate has
+    failed honestly before: its first run filed 9 defects and the gate verdict
+    was FAIL until the one MAJOR was fixed and re-run — the full defect log is
+    public in <code>app\docs\evidence.md</code>.</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 4 — The warehouse passes 33/33 data-quality checks</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\scripts\run_quality_checks.py</code></pre></dd>
+    <dt>What you should observe</dt>
+    <dd>33 checks over all three layers: primary-key duplicates and NULLs,
+    standardized-value audits, date validity and ordering,
+    sales&nbsp;=&nbsp;quantity&nbsp;&times;&nbsp;price, surrogate-key uniqueness,
+    fact→dimension referential integrity, and join fan-out guards. Known source
+    gaps are allow-listed at their documented magnitude and fail if they
+    drift.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-13: 33/33 checks passed.</span> This
+    suite has also failed honestly: it shipped at 32/33 with the failing check
+    left red on purpose until the underlying defect (implausible birthdates,
+    DQ-1) was cleansed — filed, fixed, and documented in
+    <code>app\docs\evidence.md</code>.</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 5 — Rebuilds are reproducible: same data, same fingerprint</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\warehouse\build.py
+python app\warehouse\build.py</code></pre></dd>
+    <dt>What you should observe</dt>
+    <dd>Each build records a build id, per-layer row counts, total revenue, and
+    a deterministic content fingerprint in <code>meta.build_info</code>. Two
+    consecutive builds of the same inputs get distinct build ids but the
+    identical fingerprint — the warehouse is a pure function of its inputs. The
+    fingerprint value itself changes only when the schema or data changes (by
+    design: it hashes every relation), so it is the <em>property</em> that is
+    the claim, not any one hex value.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">On the current build the fingerprint is
+    <code>37d27fd64a4fa1e2ed420fe9e77620d1</code>, identical across consecutive
+    builds and re-verified by every gate run</span> (the gate rebuilds the
+    warehouse mid-suite and asserts the fingerprint is unchanged while the
+    build id flips). It changed from the earlier
+    <code>3e02a4b72bbd66a222d0ff9dc808e7fb</code> on 2026-06-13 when the
+    canonical connector seam added three silver tables — the audited business
+    numbers were unchanged; the fingerprint moved because new relations were
+    hashed. That traceable change is the mechanism working, not a regression.</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 6 — The DuckDB → PostgreSQL port is number-for-number equivalent</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\warehouse\build.py
+python app\scripts\run_quality_checks.py</code></pre>
+    Full methodology and the audited DuckDB baseline figures:
+    <code>app\docs\evidence.md</code> and <code>app\CHANGELOG.md</code> (Week 1,
+    engine port entry). The frozen DuckDB baseline file is kept on disk
+    untouched.</dd>
+    <dt>What you should observe</dt>
+    <dd>Every number exact across engines: total revenue 29,356,250 over 27,659
+    orders; bronze/silver/gold row counts (60,398 fact rows, 18,484 customers,
+    295 products); repeat split 62.86% / 37.14% with 77.02% of revenue from
+    repeat customers; LTV avg 1,588.10 / median 272.00 / p90 4,825.70 / max
+    13,294; spot cells like 2013-07 revenue = 1,371,595 and cohort 2013-01
+    month-1 retention = 5.23%.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-12: every compared figure identical</span>
+    between the audited DuckDB baseline and the PostgreSQL warehouse; quality
+    suite 33/33 on the new engine.</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 7 — Every headline metric was independently validated: 10/10 confirmed</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd>The validation queries are pasted verbatim in
+    <code>app\docs\evidence.md</code> — written against the <em>silver</em>
+    tables with natural keys, deliberately not reusing the gold views' SQL, so
+    agreement is a cross-check rather than a tautology. Re-run any of them
+    against the built warehouse.</dd>
+    <dt>What you should observe</dt>
+    <dd>Full-table diffs return 0 disagreeing rows (all 38 monthly revenue rows;
+    all 430 cohort cells), and raw-row traces reconcile to the source — e.g. the
+    top customer's 13 raw lines sum to their 13,294 LTV, line by line; the top
+    product's 620 raw rows sum to 1,373,454 in bronze, pre-cleansing.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-12: 10/10 claims CONFIRMED</span> by the
+    adversarial validation pass (mandate: "assume the warehouse is wrong until
+    proven otherwise"). The same pass filed a real defect it found along the way
+    — see claim 4.</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 8 — When the data doesn't exist, the agent refuses in governed text</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\scripts\plum_ask.py "Show me the conversion funnel"</code></pre></dd>
+    <dt>What you should observe</dt>
+    <dd>No receipted facts, no approximation, no made-up funnel. A REFUSAL
+    section quoting the governed "Not yet supported" text from
+    <code>app\docs\metrics.md</code>: order data alone cannot recover
+    pre-purchase steps, and no proxy is acceptable. The refusal is written to
+    the audit log.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-13: governed refusal, verbatim</span> —
+    "Not yet supported (session_funnel), per app/docs/metrics.md: visits →
+    product views → add-to-cart → checkout → purchase conversion. Requires an
+    event-stream connector (storefront analytics)." (Full output on the
+    <a href="product.html">product page</a>.)</dd>
+  </dl>
+</div>
+
+<div class="claim-row">
+  <h3>Claim 9 — Every number in the admin UI traces to a governed metric</h3>
+  <dl>
+    <dt>Reproduce</dt>
+    <dd><pre><code>python app\scripts\smoke_admin.py</code></pre></dd>
+    <dt>What you should observe</dt>
+    <dd>31 deterministic checks: all five admin pages render with the real
+    governed values (total revenue 29,356,250; 2013-07 = 1,371,595; cohort
+    2013-01 retention 5.23%; the live warehouse fingerprint), the deterministic
+    Ask path returns receipted facts with a receipt id, and the JSON API stays
+    unbroken.</dd>
+    <dt>Observed</dt>
+    <dd><span class="observed">2026-06-13: SMOKE_ADMIN PASSED — all checks
+    green.</span></dd>
+  </dl>
+</div>
+
+<h2>What we don't claim</h2>
+
+<div class="honest">
+  <p>No customers, no testimonials, no revenue-lift numbers, no "stores
+  created" counter — Plum is pre-launch and has none of these. No funnel or
+  promo analytics — the connectors that would make them honest don't exist yet
+  (claim 8 shows the product saying so itself). When any of this changes, the
+  claim lands here first, with its command.</p>
+</div>
+
+<p class="muted">Found a claim on this site without a receipt? That's a bug.
+<a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20evidence%20bug">Report
+it</a> and we'll fix it or retract the claim.</p>
+
+</main>
+
+<footer class="site">
+  <img class="footer-logo" src="plum-lockup-dark-white.svg" alt="Plum" width="180" height="75">
+  <p><strong>Plum is pre-launch.</strong> Nothing on this site claims traction
+  we don't have. Every product claim is reproducible — commands and observed
+  results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
+  a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Contact / early access</a>
+  </nav>
+</footer>
+
+</body>
+</html>
