@@ -227,3 +227,24 @@ footer.site a { color: #f0c9a3; }
 footer.site a:hover { color: #fff; }
 .footer-logo { height: 2.1rem; width: auto; display: block; margin-bottom: 1rem; }
 footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0.5rem auto 0; max-width: 56rem; }
+
+/* ---- mobile (<= 640px) — the layout is already fluid (max-width + flex-wrap +
+   grid auto-fit); this tunes type, the nav, and spacing so it reads well on a
+   phone, and lets any wide table scroll instead of forcing page-wide scroll ---- */
+@media (max-width: 640px) {
+  body { font-size: 1rem; }
+  h1 { font-size: 1.9rem; }
+  h2 { font-size: 1.4rem; margin-top: 2rem; }
+  h3 { font-size: 1.12rem; }
+
+  header.site, main { padding-left: 1rem; padding-right: 1rem; }
+  header.site { gap: 0.5rem 1rem; }
+  /* nav drops onto its own full-width row under the brand, left-aligned */
+  header.site nav { margin-left: 0; width: 100%; gap: 0.4rem 0.95rem; }
+
+  .hero p.tagline { font-size: 1.1rem; }
+  .cta.big { font-size: 1rem; padding: 0.55rem 1.1rem; }
+
+  th, td { padding: 0.4rem 0.55rem; overflow-wrap: anywhere; }
+  table { display: block; overflow-x: auto; }
+}
