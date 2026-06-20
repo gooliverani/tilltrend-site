@@ -84,6 +84,18 @@ replay:   python app\scripts\plum_replay.py rcp_c60c017f43c346328383448a66088735
 postcheck: PASS (attempts=1)</pre>
 </div>
 
+<p>Every number traces to one query. Here is the <strong>governed SQL Plum runs
+for <code>total_revenue</code></strong> — the exact statement the deterministic
+layer executes for that metric and stores in the receipt's <code>execution</code>
+block. The model only chose the metric; it never writes SQL. Plum's Ask page now
+shows this beneath every answer:</p>
+
+<div class="receipt">
+  <div class="label">The governed SQL behind 29,356,250 &middot; what the receipt stores, shown inline on the Ask page</div>
+<pre><code>SELECT SUM(f.sales_amount) AS total_revenue
+FROM gold.fact_sales f</code></pre>
+</div>
+
 <p>The 29,356,250 is a property of the demo dataset, not a revenue claim about
 this product or anyone's business. Replaying that receipt re-executes the same
 governed SQL with no model involved and grades the result — observed verdict:
