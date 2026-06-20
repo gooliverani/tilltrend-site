@@ -101,7 +101,7 @@ pre-purchase funnel steps, so the product refuses rather than approximates.</p>
 
 <h2>The admin app today</h2>
 
-<p>Five server-rendered pages exist now. Every number on them is queried live at
+<p>Seven server-rendered pages exist now. Every number on them is queried live at
 render time using the canonical SQL from the governed metric definitions, and
 each KPI is footnoted with its metric id.</p>
 
@@ -109,6 +109,8 @@ each KPI is footnoted with its metric id.</p>
   <tr><th>Page</th><th>What it shows</th></tr>
   <tr><td><strong>Overview</strong></td><td>Headline KPIs (total revenue, orders, AOV, repeat-rate split, LTV distribution) plus a build-identity panel: which warehouse build produced these numbers, over what date window.</td></tr>
   <tr><td><strong>Revenue</strong></td><td>Monthly revenue table and chart (server-side SVG, no JS), with partial-month caveats quoted from the metric definition.</td></tr>
+  <tr><td><strong>Trends</strong></td><td>Sales over time at the grain you pick — day, week, month, quarter, or year — as a line/area chart with a running total, a trailing moving average, and period-over-period (and year-over-year) change. Built on governed time-series views (window functions over the fact table); a period with no sales reads as an honest 0, partial edge periods are flagged, and a change with no prior period says so rather than inventing one.</td></tr>
+  <tr><td><strong>Products</strong></td><td>Top products by revenue (server-side SVG bar chart) with a units / orders / distinct-buyers table and a category-mix breakdown, each figure from the governed product-performance metric.</td></tr>
   <tr><td><strong>Cohorts</strong></td><td>The full cohort-retention matrix; sparse cells are labeled "zero, not missing", with the governed cohort definition quoted on the page.</td></tr>
   <tr><td><strong>Ask</strong></td><td>A chat surface. Renders the exact two-section answer — receipted facts with receipt ids and hashes, interpretation visibly tagged as model prose — and, beneath every answer, <strong>the exact SQL the deterministic layer ran</strong>, a per-receipt replay command, and the post-check status.</td></tr>
   <tr><td><strong>Audit</strong></td><td>The append-only audit log: every query, every tool call, every rejection and refusal, with the warehouse build id on each row.</td></tr>
