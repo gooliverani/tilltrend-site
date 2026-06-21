@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sample report — what you'd get | Plum</title>
+<meta name="description" content="A sample Plum Store Data Health-Check on demo data — the governed, receipted report a merchant gets on their own Shopify store.">
+<link rel="icon" type="image/svg+xml" href="plum-icon.svg">
+<link rel="stylesheet" href="style.css">
+<style>
+
+.report, .report *, .report *::before, .report *::after { box-sizing: border-box; }
+/* The report is a light "paper" sheet on any surface — so it stays readable inside
+   the admin's dark theme (a document on a dark canvas), and matches the PDF. */
+.report { background: #fff; color: #1f2430; font-size: 15px; line-height: 1.55; }
+.report h1 { font-size: 26px; margin: 0 0 2px; }
+.report h2 { font-size: 17px; margin: 30px 0 10px; color: #4c1d95;
+  border-bottom: 2px solid #ede9fe; padding-bottom: 5px; }
+.report .report-head { display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 3px solid #7c3aed; padding-bottom: 14px; gap: 18px; flex-wrap: wrap; }
+.report .report-head svg, .report .report-head img { height: 44px; width: auto; }
+.report .sub { color: #6b7280; font-size: 13px; margin: 3px 0 0; }
+.report .banner { background: #f5f3ff; border: 1px solid #ddd6fe; border-radius: 8px;
+  padding: 11px 15px; margin: 16px 0 4px; font-size: 13px; color: #4c1d95; }
+.report .kpis { display: flex; gap: 14px; margin: 6px 0 2px; flex-wrap: wrap; }
+.report .kpi { flex: 1; min-width: 150px; border: 1px solid #e5e7eb; border-radius: 10px;
+  padding: 14px 16px; background: #fafafa; }
+.report .kpi-val { font-size: 23px; font-weight: 700; color: #5b21b6; }
+.report .kpi-label { font-size: 12px; color: #6b7280; margin-top: 2px;
+  text-transform: uppercase; letter-spacing: .03em; }
+.report .row2 { display: flex; gap: 26px; flex-wrap: wrap; }
+.report .row2 > div { flex: 1; min-width: 220px; }
+.report .big { font-size: 30px; font-weight: 700; color: #5b21b6; }
+.report .big-sub { color: #6b7280; font-size: 13px; }
+.report .spark { max-width: 100%; height: auto; }
+.report .bars { margin: 4px 0; }
+.report .bar-row { display: flex; align-items: center; gap: 12px; margin: 7px 0; }
+.report .bar-label { width: 92px; font-size: 13px; font-weight: 600; }
+.report .bar-track { flex: 1; height: 16px; background: #f1f0f4; border-radius: 8px;
+  overflow: hidden; }
+.report .bar-fill { display: block; height: 100%; border-radius: 8px; }
+.report .bar-val { width: 230px; font-size: 12px; color: #6b7280; text-align: right; }
+.report .rtbl-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.report .rtbl { width: 100%; border-collapse: collapse; font-size: 13px; }
+.report .rtbl th { text-align: left; color: #6b7280; font-weight: 600;
+  border-bottom: 1px solid #e5e7eb; padding: 6px 8px; }
+.report .rtbl td { padding: 6px 8px; border-bottom: 1px solid #f3f4f6; }
+.report .rtbl td:last-child, .report .rtbl th:last-child { text-align: right; }
+.report .caveat { font-size: 12px; color: #6b7280; font-style: italic; margin: 8px 0 0; }
+.report .muted { color: #9ca3af; font-size: 13px; }
+.report .rfoot { margin-top: 34px; border-top: 1px solid #e5e7eb; padding-top: 14px;
+  font-size: 12px; color: #6b7280; }
+.report .tick { color: #7c3aed; }
+@media print { .report h2 { break-after: avoid; } .report .bars, .report .rtbl,
+  .report .kpis { break-inside: avoid; } }
+@media (max-width: 560px) {
+  .report .bar-row { flex-wrap: wrap; }
+  .report .bar-label { width: auto; }
+  .report .bar-val { width: 100%; text-align: left; }
+  .report .kpi { min-width: 120px; }
+  .report .big { font-size: 26px; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="site">
+  <a class="brand" href="index.html"><img class="logo" src="plum-primary-lockup.svg" alt="Plum" width="160" height="60"><span class="wordmark">Plum<span class="tick">&#10003;</span></span></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a class="cta" href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Early access</a>
+  </nav>
+</header>
+
+<main>
+
+<div class="honest"><p>This is a <strong>Store Data Health-Check</strong> generated on Plum's
+public demo dataset (2010&ndash;2014 bike sales) &mdash; exactly the report a merchant gets on
+their <em>own</em> Shopify store, with every number traced to a governed metric definition and a
+replayable receipt. <a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20sample%20report">Request yours &rarr;</a></p></div>
+
+<div class="report"><div class='report-head'><div><h1>Store Data Health-Check</h1><p class='sub'>Sample Store &middot; data as of <strong>2014-01-28</strong> (latest order date) &middot; 38 months of history</p></div><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268 100" width="804" height="300">
+  <defs>
+    <linearGradient id="plumGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#A24FB0"></stop>
+      <stop offset="0.55" stop-color="#7E2F8E"></stop>
+      <stop offset="1" stop-color="#4E1B5C"></stop>
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#82BC74"></stop>
+      <stop offset="1" stop-color="#4E8A57"></stop>
+    </linearGradient>
+    
+  </defs>
+  <g transform="translate(2 11) scale(0.65)">
+    <g transform="rotate(-12 60 62)">
+      <path d="M60 35 C58 27 48 25 41 30 C31 37 28 53 31 68 C34 85 48 95 60 95 C72 95 86 85 89 68 C92 53 89 37 79 30 C72 25 62 27 60 35 Z" fill="url(#plumGrad)"></path>
+      <ellipse cx="46" cy="52" rx="9" ry="5" fill="#ffffff" opacity="0.18" transform="rotate(-34 46 52)"></ellipse>
+      <path d="M58 41 C50 58 51 77 60 92" stroke="#3E1349" stroke-opacity="0.3" stroke-width="3" fill="none" stroke-linecap="round"></path>
+      <path d="M60 34 C60 27 61 24 64 21" stroke="#7A4A2E" stroke-width="3.5" fill="none" stroke-linecap="round"></path>
+      <path d="M64 22 C74 11 89 15 89 15 C89 15 86 30 74 31 C66 32 61 26 64 22 Z" fill="url(#leafGrad)"></path>
+      <path d="M68 24 C75 21 84 18 84 18" stroke="#3D6B43" stroke-width="1.6" fill="none" stroke-linecap="round" opacity="0.5"></path>
+    </g>
+  </g>
+  <text x="63" y="64" font-family="&#39;Plus Jakarta Sans&#39;, sans-serif" font-weight="800" font-size="40" letter-spacing="-1.2" fill="#3A2147">Plum</text>
+</svg></div><div class='banner'>Sample report on Plum's public demo dataset (2010–2014 bike sales) — not a real store. Your report would run on your own Shopify data.</div><div class='banner'>Every figure below is computed from a governed metric definition with a replayable receipt <span class='tick'>&#10003;</span> — no estimates, no invented numbers.</div><div class='kpis'><div class="kpi"><div class="kpi-val">$29,356,250</div><div class="kpi-label">Total revenue</div></div><div class="kpi"><div class="kpi-val">27,659</div><div class="kpi-label">Orders</div></div><div class="kpi"><div class="kpi-val">$1,061.36</div><div class="kpi-label">Avg order value</div></div><div class="kpi"><div class="kpi-val">18,484</div><div class="kpi-label">Active customers</div></div></div><p class='caveat'>Gross revenue (no refund/cancellation data). AOV is the ratio of sums (revenue ÷ orders), never an average of monthly AOVs. Active customers are distinct identified buyers — not additive.</p><h2>Revenue over time</h2><svg class="spark" viewBox="0 0 620 120" width="620" height="120" preserveAspectRatio="xMidYMid meet" role="img"><polygon points="10.0,110.0 10.0,110.0 26.2,86.7 42.4,86.9 58.6,85.9 74.9,84.9 91.1,81.7 107.3,72.1 123.5,79.8 139.7,78.8 155.9,79.4 172.2,73.7 188.4,76.3 204.6,75.8 220.8,85.3 237.0,84.7 253.2,92.0 269.5,90.5 285.7,92.8 301.9,82.0 318.1,88.1 334.3,83.8 350.5,85.8 366.8,83.1 383.0,83.0 399.2,78.3 415.4,65.5 431.6,70.2 447.8,55.0 464.1,55.2 480.3,42.2 496.5,22.6 512.7,37.5 528.9,27.9 545.1,33.3 561.4,21.0 577.6,15.1 593.8,10.0 610.0,109.9 610.0,110.0" fill="#ede9fe"/><polyline points="10.0,110.0 26.2,86.7 42.4,86.9 58.6,85.9 74.9,84.9 91.1,81.7 107.3,72.1 123.5,79.8 139.7,78.8 155.9,79.4 172.2,73.7 188.4,76.3 204.6,75.8 220.8,85.3 237.0,84.7 253.2,92.0 269.5,90.5 285.7,92.8 301.9,82.0 318.1,88.1 334.3,83.8 350.5,85.8 366.8,83.1 383.0,83.0 399.2,78.3 415.4,65.5 431.6,70.2 447.8,55.0 464.1,55.2 480.3,42.2 496.5,22.6 512.7,37.5 528.9,27.9 545.1,33.3 561.4,21.0 577.6,15.1 593.8,10.0 610.0,109.9" fill="none" stroke="#7c3aed" stroke-width="2.5"/><circle cx="610.0" cy="109.9" r="3.5" fill="#6d28d9"/></svg><p class='caveat'>Edge months of the data window can be partial — read them as partial periods, not trend points.</p><h2>What your customers are worth</h2><div class='row2'><div><div class='big'>$272</div><div class='big-sub'>median lifetime value (mean $1,588 — skewed high)</div></div><div><div class='big'>77.0%</div><div class='big-sub'>of revenue comes from repeat customers (2+ orders)</div></div></div><p class='caveat'>Quote the median, not the mean — lifetime value is right-skewed, so a few big spenders pull the average up.</p><h2>Who's slipping away</h2><div class="bars"><div class="bar-row"><span class="bar-label">Active</span><span class="bar-track"><span class="bar-fill" style="width:26.1%;background:#16a34a"></span></span><span class="bar-val">26.1% of total &middot; 24.6% of revenue</span></div><div class="bar-row"><span class="bar-label">At-risk</span><span class="bar-track"><span class="bar-fill" style="width:27.5%;background:#d97706"></span></span><span class="bar-val">27.5% of total &middot; 29.2% of revenue</span></div><div class="bar-row"><span class="bar-label">Churned</span><span class="bar-track"><span class="bar-fill" style="width:46.5%;background:#dc2626"></span></span><span class="bar-val">46.5% of total &middot; 46.3% of revenue</span></div></div><p class='caveat'>As of the latest order date in the data, not today. Active = ordered within 3 months; At-risk = 3–6; Churned = 6+ . Thresholds are yours to set.</p><h2>Dead stock</h2><div class="bars"><div class="bar-row"><span class="bar-label">Active</span><span class="bar-track"><span class="bar-fill" style="width:78.5%;background:#16a34a"></span></span><span class="bar-val">78.5% of total &middot; 70.7% of revenue</span></div><div class="bar-row"><span class="bar-label">Dead</span><span class="bar-track"><span class="bar-fill" style="width:21.5%;background:#dc2626"></span></span><span class="bar-val">21.5% of total &middot; 29.3% of revenue</span></div></div><p class='caveat'>As of the latest order date, not today. Active = sold within 3 months; Slow = 3–6; Dead = no sale in 6+ . Thresholds are yours to set.</p><h2>Frequently bought together</h2><div class="rtbl-wrap"><table class="rtbl"><thead><tr><th>Product A</th><th>Product B</th><th>Orders together</th><th>Share of orders</th></tr></thead><tbody><tr><td>Mountain Bottle Cage</td><td>Water Bottle - 30 oz.</td><td>1,692</td><td>6.1%</td></tr><tr><td>Road Bottle Cage</td><td>Water Bottle - 30 oz.</td><td>1,521</td><td>5.5%</td></tr><tr><td>HL Mountain Tire</td><td>Mountain Tire Tube</td><td>957</td><td>3.5%</td></tr><tr><td>Touring Tire</td><td>Touring Tire Tube</td><td>808</td><td>2.9%</td></tr><tr><td>Patch Kit/8 Patches</td><td>Mountain Tire Tube</td><td>785</td><td>2.8%</td></tr></tbody></table></div><p class='caveat'>Co-occurrence, not causation — these products share orders, which need not mean one drives the other.</p><h2>Top products by revenue</h2><div class="rtbl-wrap"><table class="rtbl"><thead><tr><th>Product</th><th>Category</th><th>Revenue</th><th>Units</th></tr></thead><tbody><tr><td>Mountain-200 Black- 46</td><td>Bikes</td><td>$1,373,454</td><td>620</td></tr><tr><td>Mountain-200 Black- 42</td><td>Bikes</td><td>$1,363,128</td><td>614</td></tr><tr><td>Mountain-200 Silver- 38</td><td>Bikes</td><td>$1,339,394</td><td>596</td></tr><tr><td>Mountain-200 Silver- 46</td><td>Bikes</td><td>$1,301,029</td><td>580</td></tr><tr><td>Mountain-200 Black- 38</td><td>Bikes</td><td>$1,294,854</td><td>582</td></tr></tbody></table></div><p class='caveat'>Gross revenue per product; a product's order count is not additive (one order can span products).</p><div class='rfoot'><strong>Plum</strong> &mdash; the honest AI analyst for Shopify. Every number traces to a governed definition and a replayable receipt. plum-labs.com</div></div>
+</main>
+
+<footer class="site">
+  <img class="footer-logo" src="plum-lockup-dark-white.svg" alt="Plum" width="180" height="75">
+  <p><strong>Plum is pre-launch.</strong> Nothing on this site claims traction
+  we don't have. Every product claim is reproducible — commands and observed
+  results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
+  a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Contact / early access</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+  </nav>
+</footer>
+
+</body>
+</html>

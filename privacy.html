@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<!-- DRAFT pending review before publishing. Confirm the Security and AI-processing
+     sections match the actual posture (encrypted token storage is spec/11 S2), keep
+     the sub-processor list current, and have it reviewed by a lawyer. Not legal advice. -->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy | Plum</title>
+<meta name="description" content="How Plum accesses, processes, and protects your Shopify store data — written plainly, in the same honest spirit as the product.">
+<link rel="icon" type="image/svg+xml" href="plum-icon.svg">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="site">
+  <a class="brand" href="index.html"><img class="logo" src="plum-primary-lockup.svg" alt="Plum" width="160" height="60"><span class="wordmark">Plum<span class="tick">&#10003;</span></span></a>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a class="cta" href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Early access</a>
+  </nav>
+</header>
+
+<main>
+
+<h1>Privacy Policy</h1>
+
+<p><em>Last updated: 21 June 2026. Plum is pre-launch — this policy describes how
+Plum handles data for merchants who connect their store.</em></p>
+
+<p>Plum is an analytics app for Shopify. For the data inside your store, Plum acts
+as a <strong>data processor on your behalf</strong>: you are the controller of your
+customers' personal data, and Plum processes it only to provide the analytics you
+ask for. We wrote this the same way we built the product — plainly, with no claims
+we can't stand behind.</p>
+
+<h2>Who we are</h2>
+<p>Plum (plum-labs.com). Privacy contact:
+<a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20privacy">vladimirvukojicic@gmail.com</a>.
+A human reads every message.</p>
+
+<h2>What we access and process</h2>
+<ul>
+  <li><strong>Shopify store data you authorize</strong> — orders, products, and
+  customer records, read through the Shopify API under the scopes you approve when
+  you install the app. This can include personal data about <em>your</em> customers
+  (names, contact details, order history) that lives in your store.</li>
+  <li><strong>Account &amp; install details</strong> — your store domain, the access
+  token issued by Shopify at install, and your contact email.</li>
+  <li><strong>Billing</strong> — handled entirely through Shopify's Billing API. We
+  see your subscription status, not your card details.</li>
+  <li><strong>Operational logs</strong> — requests, errors, and timestamps needed to
+  run, secure, and debug the service.</li>
+</ul>
+
+<h2>How we use it</h2>
+<ul>
+  <li>To build your governed metrics and answer your questions in the app, over the
+  MCP connection, and in connected BI tools.</li>
+  <li>To operate, secure, support, and improve the service.</li>
+  <li>To bill you for the plan you chose (via Shopify).</li>
+</ul>
+<p>We do <strong>not</strong> sell your data, and we do not use one merchant's data
+to serve another.</p>
+
+<h2>AI processing (the honest detail)</h2>
+<p>Plum's <strong>Ask</strong> feature uses a third-party AI provider
+(<strong>Anthropic</strong>) to interpret your question and phrase the answer. The
+model never receives your database credentials and does not author queries; the
+governed metric and its SQL live in Plum. To produce a written answer, the
+<em>results</em> of a governed query (the numbers and rows behind that answer) may be
+sent to Anthropic's API. Anthropic processes this under its commercial API terms and
+does not use it to train its models. We will tell you here before that materially
+changes.</p>
+
+<h2>Sub-processors</h2>
+<ul>
+  <li><strong>Shopify</strong> — the platform your store and billing run on.</li>
+  <li><strong>Anthropic</strong> — the AI provider behind the Ask feature.</li>
+  <li><strong>Our cloud hosting and database provider</strong> — where the service
+  and your warehouse run.</li>
+</ul>
+<p>We keep this list current and will note material changes on this page.</p>
+
+<h2>How long we keep it</h2>
+<p>We retain your store data while the app is installed. When you uninstall, Shopify
+sends a <code>shop/redact</code> request and Plum deprovisions your tenant and deletes
+the warehouse built from your store. When a customer exercises a deletion right,
+Shopify sends <code>customers/redact</code>, which we honor; because your analytics
+are rebuilt from your store, a customer removed at the source falls out of Plum on the
+next sync.</p>
+
+<h2>Your rights — and your customers' rights</h2>
+<p>Depending on where you and your customers live (e.g. GDPR, CCPA), you may have
+rights to access, correct, export, or delete personal data. Requests from
+<em>your</em> customers flow through Shopify's mandatory privacy webhooks
+(<code>customers/data_request</code>, <code>customers/redact</code>,
+<code>shop/redact</code>), which Plum implements. For your own account data, email us
+and we'll act on verified requests.</p>
+
+<h2>Security</h2>
+<p>We limit access to your data and credentials to what's needed to run the service,
+use a <strong>read-only, least-privilege database role</strong> for analytics and BI
+connections, and verify the authenticity of every Shopify webhook before acting on
+it. We continue to strengthen our safeguards as the service moves to production
+infrastructure. No method of storage or transmission is perfectly secure, and we
+won't claim otherwise.</p>
+
+<h2>Cookies &amp; tracking</h2>
+<p>This marketing site uses <strong>no advertising or tracking cookies</strong>. The
+app uses only the essential cookies and authentication needed to keep you signed in.</p>
+
+<h2>Children</h2>
+<p>Plum is a business tool and is not directed to children.</p>
+
+<h2>Changes to this policy</h2>
+<p>We'll post any changes here and update the date above; material changes will be
+called out.</p>
+
+<h2>Contact</h2>
+<p>Questions about privacy:
+<a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20privacy">vladimirvukojicic@gmail.com</a>.</p>
+
+</main>
+
+<footer class="site">
+  <img class="footer-logo" src="plum-lockup-dark-white.svg" alt="Plum" width="180" height="75">
+  <p><strong>Plum is pre-launch.</strong> Nothing on this site claims traction
+  we don't have. Every product claim is reproducible — commands and observed
+  results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
+  a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="product.html">Product</a>
+    <a href="evidence.html">Evidence</a>
+    <a href="changelog.html">Changelog</a>
+    <a href="about.html">About</a>
+    <a href="mailto:vladimirvukojicic@gmail.com?subject=Plum%20early%20access">Contact / early access</a>
+    <a href="privacy.html">Privacy</a>
+    <a href="terms.html">Terms</a>
+  </nav>
+</footer>
+
+</body>
+</html>
