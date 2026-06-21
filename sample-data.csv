@@ -1,0 +1,30 @@
+﻿product_key,product_number,product_name,category,subcategory,product_line,revenue,units_sold,orders,customers
+122,BK-M68B-46,Mountain-200 Black- 46,Bikes,Mountain Bikes,Mountain,1373454,620,620,600
+121,BK-M68B-42,Mountain-200 Black- 42,Bikes,Mountain Bikes,Mountain,1363128,614,614,604
+123,BK-M68S-38,Mountain-200 Silver- 38,Bikes,Mountain Bikes,Mountain,1339394,596,596,583
+125,BK-M68S-46,Mountain-200 Silver- 46,Bikes,Mountain Bikes,Mountain,1301029,580,580,567
+120,BK-M68B-38,Mountain-200 Black- 38,Bikes,Mountain Bikes,Mountain,1294854,582,582,565
+124,BK-M68S-42,Mountain-200 Silver- 42,Bikes,Mountain Bikes,Mountain,1257368,560,560,547
+17,BK-R93R-48,Road-150 Red- 48,Bikes,Road Bikes,Road,1205786,337,337,337
+20,BK-R93R-62,Road-150 Red- 62,Bikes,Road Bikes,Road,1202208,336,336,336
+18,BK-R93R-52,Road-150 Red- 52,Bikes,Road Bikes,Road,1080556,302,302,302
+19,BK-R93R-56,Road-150 Red- 56,Bikes,Road Bikes,Road,1055510,295,295,295
+
+# Plum receipt — provenance of the rows above
+metric,product_performance
+tool,run_metric
+question,product_performance
+receipt_id,rcp_be2f41222732489ca1b63dc107e916cd
+receipt_hash,sha256:97363d4c337a831d098ad99ec6a58669982f4fa26f4e9b206646126d36a08dcd
+result_hash,sha256:bd7e04151da442e34cfebe36bde4218e3becf6f194acd126cc4ae2976022f068
+warehouse_build,9a4790b5-1689-441f-b922-5ba72fc8ace7
+built_at,2026-06-21T00:13:54.231610+02:00
+created_at,2026-06-21T14:42:56.191+00:00
+dataset_window,2010-12-29 .. 2014-01-28
+row_count,10
+elapsed_ms,375.3
+sql,"SELECT product_key, product_number, product_name, category, subcategory, product_line, revenue, units_sold, orders, customers FROM gold.v_product_performance f ORDER BY revenue DESC, product_key ASC LIMIT %s"
+params,[10]
+caveat,orders is not additive across products (one order can hold several products).
+caveat,top_n=10: more segments/rows may exist beyond the returned set; any segment_sum covers the returned rows only.
+replay (model-free),python app\scripts\plum_replay.py rcp_be2f41222732489ca1b63dc107e916cd
