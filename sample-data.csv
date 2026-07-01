@@ -9,17 +9,17 @@
 metric,product_performance
 tool,run_metric
 question,product_performance
-receipt_id,rcp_ebc67a4f44c2486c9db6691717741d27
-receipt_hash,sha256:bc9e9ffcb6e561f03070311776d07b9ab6a89019bd141e96377c477ee8a04379
+receipt_id,rcp_6e694811e0164e9f8e70d7163e28b2c6
+receipt_hash,sha256:10938e90b90c820107c5d561338c0df837779c545a5f79eee9a02f3d4a6506b0
 result_hash,sha256:40e544574605ae969e46fea1da0dde8b7c548ef4660c9f9a3fef72e2449edfdb
 warehouse_build,4a0b0e69-d53b-4772-8572-76b5762a4004
 built_at,2026-07-01T07:47:18.511231+02:00
-created_at,2026-07-01T06:06:13.923+00:00
+created_at,2026-07-01T06:17:32.152+00:00
 dataset_window,2010-12-29 .. 2014-01-28
 row_count,5
-elapsed_ms,511.9
+elapsed_ms,435.2
 sql,"SELECT product_key, product_number, product_name, category, subcategory, product_line, revenue, units_sold, orders, customers FROM gold.v_product_performance f ORDER BY revenue DESC, product_key ASC LIMIT %s"
 params,[5]
 caveat,orders is not additive across products (one order can hold several products).
 caveat,top_n=5: more segments/rows may exist beyond the returned set; any segment_sum covers the returned rows only.
-replay (model-free),python app\scripts\replay.py rcp_ebc67a4f44c2486c9db6691717741d27
+replay (model-free),python app\scripts\replay.py rcp_6e694811e0164e9f8e70d7163e28b2c6
