@@ -1,0 +1,63 @@
+# Tilltrend uptime monitor (S3): polls the live app's /health every ~15 min.
+# - Stage 1 (no credentials): expects HTTP 200/401 - proves edge + tunnel + app.
+# - Stage 2 (TILLTREND_HEALTH_AUTH secret, if set): authenticated /health must be
+#   HTTP 200 with "status": "ok"; the response body is never printed (public logs).
+# - Failure of any run emails the repo owner (default GitHub Actions notifications)
+#   = the S3 downtime alert. Test the alert path with:
+#     gh workflow run uptime -f simulate=fail
+# - Heads-up: GitHub disables cron workflows after ~60 days without repo activity;
+#   routine site publishes keep this alive.
+name: uptime
+
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      simulate:
+        description: "Set to 'fail' to test the failure alert"
+        required: false
+        default: ""
+
+permissions: {}
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Simulated failure (alert test)
+        if: ${{ inputs.simulate == 'fail' }}
+        run: |
+          echo "Simulated failure requested - testing the alert path."
+          exit 1
+
+      - name: Edge + app liveness (no credentials)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" --retry 3 --retry-delay 5 --retry-all-errors \
+            --connect-timeout 10 --max-time 30 https://app.tilltrend.app/health)
+          echo "GET /health (unauthenticated) -> HTTP $code"
+          case "$code" in
+            200|401) echo "edge + tunnel + app are up" ;;
+            *) echo "::error::app.tilltrend.app/health returned HTTP $code"; exit 1 ;;
+          esac
+
+      - name: Deep health (authenticated, payload never logged)
+        env:
+          AUTH: ${{ secrets.TILLTREND_HEALTH_AUTH }}
+        run: |
+          if [ -z "$AUTH" ]; then
+            echo "no TILLTREND_HEALTH_AUTH secret configured - skipping deep check"
+            exit 0
+          fi
+          body=$(curl -sf -u "$AUTH" --retry 3 --retry-delay 5 --retry-all-errors \
+            --connect-timeout 10 --max-time 30 https://app.tilltrend.app/health) || {
+            echo "::error::authenticated /health request failed"
+            exit 1
+          }
+          if printf '%s' "$body" | grep -q '"status": "ok"'; then
+            echo 'deep health: "status": "ok"'
+          else
+            echo "::error::/health responded but status is not ok (payload withheld from public log)"
+            exit 1
+          fi
