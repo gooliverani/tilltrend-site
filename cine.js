@@ -104,12 +104,17 @@
     }
     tag.style.opacity = String(1 - seg(s, 0.3, 0.42));
 
-    /* B · seam glow condenses into the firefly point (s 0.30–0.58) */
+    /* B · seam glow: rests at the feature image's MUTED level; scrolling wakes
+       it with two firefly flicks (founder call 2026-07-18: flick, then return
+       to muted, never settle brighter), then it condenses into the firefly
+       point (s 0.30–0.58) exactly as before, fading from the muted level. */
+    var flick = 0.45 * bump(s, 0.07, 0.035) + 0.45 * bump(s, 0.15, 0.04);
+    var glowLevel = Math.min(1, 0.55 + flick);
     var g = ioCubic(seg(s, 0.3, 0.58));
     glows.forEach(function (el) {
       var cx = +(el.getAttribute("cx") || 55), cy = +(el.getAttribute("cy") || -10);
       el.style.transform = "translate(" + (GLOW_TO.x - cx) * g + "px," + (GLOW_TO.y - cy) * g + "px) scale(" + lerp(1, 0.1, g) + ")";
-      el.style.opacity = String(1 - g);
+      el.style.opacity = String(glowLevel * (1 - g));
     });
 
     /* C · hexes disperse outward, staggered, center last (s 0.36–0.76) */

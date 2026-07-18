@@ -445,6 +445,9 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
   transform-box: fill-box; transform-origin: center;
   will-change: transform, opacity;
 }
+/* rest state matches the feature image: the glow sits muted; only the firefly
+   flicks pulse it (cine.js). This is also the static no-JS fallback look. */
+.cine-hex .glow { opacity: 0.55; }
 .cine-copy { max-width: 34rem; }
 .cine-word {
   font-weight: 700; font-size: clamp(2.6rem, 7vw, 4.8rem);
