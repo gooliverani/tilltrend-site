@@ -166,6 +166,12 @@
   var target = shown;
   apply(shown);
 
+  /* touch devices catch up more gently: a fling teleports scrollY, and the
+     lower ease spreads that jump over more frames so the beats stay readable
+     (mouse wheels feed small steady deltas - desktop keeps the snappier ease) */
+  var EASE = (window.matchMedia && matchMedia("(pointer: coarse)").matches)
+    ? 0.10 : 0.16;
+
   var raf = null;
   var collapsed = false;
   function frame() {
@@ -185,7 +191,7 @@
       window.removeEventListener("scroll", kick);
       return;
     }
-    shown += (target - shown) * 0.16;
+    shown += (target - shown) * EASE;
     if (Math.abs(target - shown) < 0.0005) shown = target;
     apply(shown);
     window.__cineP = shown;

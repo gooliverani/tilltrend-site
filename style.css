@@ -48,7 +48,15 @@
 
 * { box-sizing: border-box; }
 
-html { color-scheme: dark; }
+html {
+  color-scheme: dark;
+  /* clip the VIEWPORT's horizontal overflow directly (no body-propagation
+     question): even geometry that escapes body clipping - the fixed off-canvas
+     drawer - can never make phones horizontally pannable. clip creates no
+     scroll container, so position:sticky stays alive. Old engines ignore it
+     and keep the body-level guards. */
+  overflow-x: clip;
+}
 
 body {
   margin: 0;
@@ -458,7 +466,11 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
   text-transform: uppercase; color: var(--ink-soft);
 }
 @media (max-width: 640px) {
-  .cine-on .cine { height: 260vh; }   /* cheaper thumb-scroll on phones */
+  /* LONGER track than desktop (340vh), not shorter: a thumb-fling covers
+     several viewports where a wheel tick covers ~200px, so per-gesture
+     progress must be diluted or the whole story plays in two swipes
+     (founder-reported 2026-07-18). cine.js also eases harder on touch. */
+  .cine-on .cine { height: 480vh; }
   .cine-stage { flex-direction: column; gap: 5svh; padding: 0 1.1rem; }
   .cine-hex { width: min(56vw, 240px); }
   .cine-copy { text-align: center; }
