@@ -399,6 +399,15 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
   }
   .nav-cb:checked ~ .nav-scrim { opacity: 1; visibility: visible; }
 
+  /* Open menu wins over the hero scene (homepage): the drawer lives inside the
+     header's stacking context (z 50), which the scrub stage (z 55) normally
+     overpaints so the docking wordmark is not blurred by the bar glass — but
+     that also painted the scene OVER the open drawer (founder-reported
+     2026-07-18). While the drawer is open (scroll is locked then anyway), the
+     stage drops beneath the header context, so drawer + scrim stack above the
+     scene like on any other page; on close it pops back for the dock beat. */
+  body:has(#nav-toggle:checked) .cine-stage { z-index: 40; }
+
   .hero { margin: 1rem 0 2rem; }
   .hero p.tagline { font-size: 1.1rem; }
   .cta.big { font-size: 1rem; padding: 0.6rem 1.15rem; }
