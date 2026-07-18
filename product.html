@@ -3,8 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Product — how Tilltrend works | Tilltrend</title>
+<title>Product: how Tilltrend works | Tilltrend</title>
 <meta name="description" content="How Tilltrend works: the Ask flow, receipts and model-free replay, honest refusals, the admin pages that exist today, and the architecture underneath.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tilltrend">
+<meta property="og:title" content="Product: how Tilltrend works">
+<meta property="og:description" content="How Tilltrend works: the Ask flow, receipts and model-free replay, honest refusals, the admin pages that exist today, and the architecture underneath.">
+<meta property="og:url" content="https://tilltrend.app/product.html">
+<meta property="og:image" content="https://tilltrend.app/og-image.png">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta property="og:image:alt" content="Tilltrend: every number comes with a receipt.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="tilltrend-icon.svg">
 <link rel="stylesheet" href="style.css">
 </head>
@@ -29,14 +39,14 @@
 
 <h1>How Tilltrend works</h1>
 <p class="tagline">An AI analyst is only useful if you can trust the numbers.
-Tilltrend's design starts from the assumption that you shouldn't have to trust —
-you should be able to check.</p>
+Tilltrend's design starts from the assumption that you shouldn't have to trust.
+You should be able to check.</p>
 
 <p><a class="cta" href="sample-report.html">See a sample report &rarr;</a></p>
 
 <h2>The Ask flow</h2>
 
-<p>You type a question — "What was total revenue?", "Compare June and July 2013
+<p>You type a question: "What was total revenue?", "Compare June and July 2013
 revenue", "Which countries drive revenue?". What happens next is deliberately
 split in two:</p>
 
@@ -47,32 +57,32 @@ split in two:</p>
   rate). Invalid proposals are rejected and audited; the model gets one chance
   to correct itself, then the system refuses deterministically.</li>
   <li><strong>The deterministic layer computes.</strong> The metric's canonical
-  SQL — written down once, in a governed definitions document — runs against the
+  SQL (written down once, in a governed definitions document) runs against the
   warehouse over a read-only connection. The result is written into a receipt:
   the SQL, the parameters, the rows, the warehouse build identity, and content
   hashes over all of it.</li>
 </ol>
 
 <p>The answer you see has two visibly separate sections. <strong>RECEIPTED
-FACTS</strong> is rendered by code directly from the stored receipts — the model
+FACTS</strong> is rendered by code directly from the stored receipts. The model
 cannot edit it. <strong>INTERPRETATION</strong> is model prose, labeled "model,
 not receipted", and a post-check verifies every number in it appears in the
 receipted facts. If the model invents a number, the draft is rejected and
 regenerated; two strikes and a deterministic fallback ships instead. This has
-caught a real violation in testing — the bad draft never shipped.</p>
+caught a real violation in testing. The bad draft never shipped.</p>
 
 <h2>Receipts and replay, simply</h2>
 
 <p>Every receipted fact carries a receipt id and a hash, like
 <code>rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a</code>.
-Replaying a receipt re-executes its exact SQL against the warehouse —
-<em>no model anywhere in the loop</em> — and grades the result:</p>
+Replaying a receipt re-executes its exact SQL against the warehouse,
+<em>no model anywhere in the loop</em>, and grades the result:</p>
 
 <table>
   <tr><th>Verdict</th><th>Meaning</th></tr>
   <tr><td><strong>MATCH</strong></td><td>Same SQL, same data, same numbers. The answer still holds.</td></tr>
   <tr><td><strong>STALE</strong></td><td>The warehouse content changed since the receipt was written; the receipt was honest for the data it saw.</td></tr>
-  <tr><td><strong>FAIL</strong></td><td>The receipt does not survive re-execution — including receipts someone edited to lie coherently.</td></tr>
+  <tr><td><strong>FAIL</strong></td><td>The receipt does not survive re-execution, including receipts someone edited to lie coherently.</td></tr>
   <tr><td><strong>ERROR</strong></td><td>The receipt file is malformed; the grader refuses to grade rather than guess.</td></tr>
 </table>
 
@@ -84,7 +94,7 @@ predicted signature. Commands and observed results are on the
 
 <h2>Honest refusal</h2>
 
-<p>When the data to answer a question doesn't exist, Tilltrend says so — in
+<p>When the data to answer a question doesn't exist, Tilltrend says so, in
 governed text quoted from the metric documentation, not model improvisation.
 Verbatim, from a real run on 2026-06-13:</p>
 
@@ -113,17 +123,17 @@ each KPI is footnoted with its metric id.</p>
 <table>
   <tr><th>Page</th><th>What it shows</th></tr>
   <tr><td><strong>Overview</strong></td><td>Headline KPIs (total revenue, orders, AOV, repeat-rate split, LTV distribution) plus a build-identity panel: which warehouse build produced these numbers, over what date window.</td></tr>
-  <tr><td><strong>Trends</strong></td><td>Sales over time at the grain you pick — day, week, month, quarter, or year — as a line/area chart with a running total, a trailing moving average, and period-over-period (and year-over-year) change. Built on governed time-series views (window functions over the fact table); a period with no sales reads as an honest 0, partial edge periods are flagged, and a change with no prior period says so rather than inventing one.</td></tr>
+  <tr><td><strong>Trends</strong></td><td>Sales over time at the grain you pick (day, week, month, quarter, or year) as a line/area chart with a running total, a trailing moving average, and period-over-period (and year-over-year) change. Built on governed time-series views (window functions over the fact table); a period with no sales reads as an honest 0, partial edge periods are flagged, and a change with no prior period says so rather than inventing one.</td></tr>
   <tr><td><strong>Products</strong></td><td>Top products by revenue (server-side SVG bar chart) with a units / orders / distinct-buyers table and a category-mix breakdown, each figure from the governed product-performance metric.</td></tr>
   <tr><td><strong>Cohorts</strong></td><td>The full cohort-retention matrix; sparse cells are labeled "zero, not missing", with the governed cohort definition quoted on the page.</td></tr>
-  <tr><td><strong>Ask</strong></td><td>A chat surface. Renders the exact two-section answer — receipted facts with receipt ids and hashes, interpretation visibly tagged as model prose — and, beneath every answer, <strong>the exact SQL the deterministic layer ran</strong>, a per-receipt replay command, and the post-check status.</td></tr>
+  <tr><td><strong>Ask</strong></td><td>A chat surface. Renders the exact two-section answer (receipted facts with receipt ids and hashes, interpretation visibly tagged as model prose) and, beneath every answer, <strong>the exact SQL the deterministic layer ran</strong>, a per-receipt replay command, and the post-check status.</td></tr>
   <tr><td><strong>Audit</strong></td><td>The append-only audit log: every query, every tool call, every rejection and refusal, with the warehouse build id on each row.</td></tr>
 </table>
 
 <div class="honest">
   <p><strong>What deliberately doesn't exist:</strong> there are no Funnel,
-  Experiments, or Insights pages — not even mock ones. The nav carries a single
-  greyed, non-clickable note: "Funnel — requires event data". A page ships when
+  Experiments, or Insights pages, not even mock ones. The nav carries a single
+  greyed, non-clickable note: "Funnel: requires event data". A page ships when
   the capability is real, not before.</p>
 </div>
 
@@ -131,11 +141,11 @@ each KPI is footnoted with its metric id.</p>
 
 <ul>
   <li><strong>Session funnel</strong> (visits → views → cart → checkout →
-  purchase) — requires an event-stream connector. Refused honestly today, as
+  purchase): requires an event-stream connector. Refused honestly today, as
   shown above.</li>
-  <li><strong>Promo performance</strong> (discount uptake, promo ROI) — requires
+  <li><strong>Promo performance</strong> (discount uptake, promo ROI): requires
   a promotions/discounts source; the current demo extract has none.</li>
-  <li><strong>Store connectors</strong> — the warehouse currently builds from
+  <li><strong>Store connectors</strong>: the warehouse currently builds from
   CSV extracts. A Shopify connector is planned as the first integration; it does
   not exist yet, and we won't describe it as if it did.</li>
 </ul>
@@ -144,7 +154,7 @@ each KPI is footnoted with its metric id.</p>
 
 <h3>A real layered warehouse</h3>
 <p>Store data lands in a medallion warehouse on PostgreSQL:
-<strong>bronze</strong> (raw, as extracted), <strong>silver</strong> (cleansed —
+<strong>bronze</strong> (raw, as extracted), <strong>silver</strong> (cleansed:
 deduplication, invalid-date nulling, amount repairs, all rules documented),
 <strong>gold</strong> (a star schema plus analytics views: monthly revenue,
 cohort retention, customer LTV, product performance, repeat rate). Rebuilds are
@@ -155,12 +165,12 @@ was ported DuckDB → PostgreSQL with every metric verified exact across
 engines.</p>
 
 <h3>Governed metrics, one source of truth</h3>
-<p>Every metric the agent can cite is defined once — id, plain-language
+<p>Every metric the agent can cite is defined once: id, plain-language
 definition, exact formula, grain, lineage, canonical SQL, and real caveats
 (including the dataset's known gaps, like 19 invalid-date sales lines worth
 4,992 of revenue, documented rather than hidden). Definitions change only via
 dated decision entries. If a question needs a formula that isn't governed,
-that's a new-definition request — not a judgment call the model gets to make.</p>
+that's a new-definition request, not a judgment call the model gets to make.</p>
 
 <h3>The model never touches data</h3>
 <p>The law of the system: the model proposes tool calls and writes prose;
@@ -169,7 +179,7 @@ runs over a connection that is read-only twice over (database-level read-only
 transactions plus an SQL gate allowing single SELECT statements only), with
 statement timeouts and row caps. Every call, rejection, and refusal is written
 to an append-only audit log. The receipts machinery itself is tested by an
-adversarial verification gate — interception tests prove the receipt contains
+adversarial verification gate: interception tests prove the receipt contains
 the very objects the query executed, fault-injection proves forgeries fail,
 renderer tests prove what's stored is what's shown.</p>
 
@@ -181,7 +191,7 @@ claim, with its command, on the evidence page</a>.</p>
 <footer class="site">
   <img class="footer-logo" src="tilltrend-lockup-dark-white.svg" alt="Tilltrend" width="180" height="75">
   <p><strong>Tilltrend is pre-launch.</strong> Nothing on this site claims traction
-  we don't have. Every product claim is reproducible — commands and observed
+  we don't have. Every product claim is reproducible: commands and observed
   results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
   a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
   <nav>

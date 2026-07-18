@@ -3,8 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Tilltrend — the AI analyst for your store. Every answer shows its work.</title>
+<title>Tilltrend: the AI analyst for your store. Every answer shows its work.</title>
 <meta name="description" content="Tilltrend is an AI analyst for ecommerce stores. Every number it gives you carries a receipt: the governed metric, the exact SQL, and a replayable hash. Pre-launch, built in public.">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Tilltrend">
+<meta property="og:title" content="Tilltrend: the AI analyst for your store">
+<meta property="og:description" content="Tilltrend is an AI analyst for ecommerce stores. Every number it gives you carries a receipt: the governed metric, the exact SQL, and a replayable hash. Pre-launch, built in public.">
+<meta property="og:url" content="https://tilltrend.app/">
+<meta property="og:image" content="https://tilltrend.app/og-image.png">
+<meta property="og:image:width" content="1600">
+<meta property="og:image:height" content="900">
+<meta property="og:image:alt" content="Tilltrend: every number comes with a receipt.">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="tilltrend-icon.svg">
 <link rel="stylesheet" href="style.css">
 <script>
@@ -34,7 +44,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
 
 <!-- Cinematic reverse-scrub hero (DESIGN.md: "the light that shows its work").
      Decorative and additive: hidden without .cine-on, aria-hidden, and the CSS
-     default is the fully ASSEMBLED scene — cine.js only drives the scrub. The
+     default is the fully ASSEMBLED scene; cine.js only drives the scrub. The
      scene is the real brand geometry (lockup polygons verbatim) with the glow
      re-anchored on the true brand emerald per the founder's color correction. -->
 <section class="cine" id="cine" aria-hidden="true">
@@ -75,7 +85,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
   <span class="prelaunch">Pre-launch &middot; built in public</span>
   <h1>The AI analyst for your store.<br>Every answer shows its work.</h1>
   <p class="tagline">Ask questions about your store in plain language. Every number
-  in the answer carries a receipt — the governed metric definition, the exact SQL,
+  in the answer carries a receipt: the governed metric definition, the exact SQL,
   and a hash you can replay without the AI in the loop.</p>
   <a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a>
 </div>
@@ -84,8 +94,8 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
   <section>
     <h3>Ask in plain language</h3>
     <p>"What was total revenue?" "Compare June and July." "Which countries drive
-    revenue?" The model picks the right governed metric and writes the prose —
-    it never writes the SQL and never touches your data directly.</p>
+    revenue?" The model picks the right governed metric and writes the prose.
+    It never writes the SQL and never touches your data directly.</p>
   </section>
   <section>
     <h3>Every answer carries a receipt</h3>
@@ -96,7 +106,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
   </section>
   <section>
     <h3>Your warehouse is yours</h3>
-    <p>Tilltrend builds a real bronze/silver/gold warehouse from your store data —
+    <p>Tilltrend builds a real bronze/silver/gold warehouse from your store data:
     on PostgreSQL you control, exportable, inspectable. Built so that leaving is
     easy, which is exactly why you won't have to.</p>
   </section>
@@ -105,13 +115,13 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
 <h2>What an answer actually looks like</h2>
 
 <p>This is not a mockup. It is the verbatim terminal output of the product
-answering "What was total revenue?" — run on 2026-06-13 against the demo
+answering "What was total revenue?", run on 2026-06-13 against the demo
 warehouse. Reproduce it yourself with:</p>
 
 <pre><code>python app\scripts\ask.py "What was total revenue?"</code></pre>
 
 <div class="receipt">
-  <div class="label">Real output &middot; demo dataset (public training data, 2010&ndash;2014 bike sales — not real merchants)</div>
+  <div class="label">Real output &middot; demo dataset (public training data, 2010&ndash;2014 bike sales, not real merchants)</div>
 <pre>question: What was total revenue?
 turn:     turn_aba83b83e19d   mode: model   model: claude-haiku-4-5-20251001
 
@@ -132,7 +142,7 @@ postcheck: PASS (attempts=1)</pre>
 </div>
 
 <p>Every number traces to one query. Here is the <strong>governed SQL Tilltrend runs
-for <code>total_revenue</code></strong> — the exact statement the deterministic
+for <code>total_revenue</code></strong>: the exact statement the deterministic
 layer executes for that metric and stores in the receipt's <code>execution</code>
 block. The model only chose the metric; it never writes SQL. Tilltrend's Ask page now
 shows this beneath every answer:</p>
@@ -145,7 +155,7 @@ FROM gold.fact_sales f</code></pre>
 
 <p>The 29,356,250 is a property of the demo dataset, not a revenue claim about
 this product or anyone's business. Replaying that receipt re-executes the same
-governed SQL with no model involved and grades the result — observed verdict:
+governed SQL with no model involved and grades the result. Observed verdict:
 <span class="observed">MATCH</span>. Doctor the receipt file and it fails.
 <a href="evidence.html">See every claim with its reproduction command &rarr;</a></p>
 
@@ -155,7 +165,7 @@ governed SQL with no model involved and grades the result — observed verdict:
 
 <div class="honest">
   <p><strong>Tilltrend is pre-launch.</strong> No merchant counts, no testimonials,
-  no revenue-lift percentages — we have none, so none appear on this site. What
+  no revenue-lift percentages: we have none, so none appear on this site. What
   we do have is a working product whose every claim is reproducible: the
   <a href="evidence.html">evidence page</a> lists each one with the exact command
   and the observed result, and the <a href="changelog.html">changelog</a> records
@@ -166,7 +176,7 @@ governed SQL with no model involved and grades the result — observed verdict:
 
 <p>We're looking for a small number of merchants to shape the first connectors
 (Shopify planned first). If "an analyst that shows its work" sounds like what
-your store is missing, write to us — a human reads every mail.</p>
+your store is missing, write to us. A human reads every mail.</p>
 
 <p><a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a></p>
 
@@ -175,7 +185,7 @@ your store is missing, write to us — a human reads every mail.</p>
 <footer class="site">
   <img class="footer-logo" src="tilltrend-lockup-dark-white.svg" alt="Tilltrend" width="180" height="75">
   <p><strong>Tilltrend is pre-launch.</strong> Nothing on this site claims traction
-  we don't have. Every product claim is reproducible — commands and observed
+  we don't have. Every product claim is reproducible: commands and observed
   results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
   a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
   <nav>
