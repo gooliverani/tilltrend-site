@@ -474,12 +474,14 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em;
   text-transform: uppercase; color: var(--ink-soft);
 }
+.cine-hint::after { content: "Scroll"; }
 @media (max-width: 640px) {
   /* LONGER track than desktop (340vh), not shorter: a thumb-fling covers
      several viewports where a wheel tick covers ~200px, so per-gesture
      progress must be diluted or the whole story plays in two swipes
      (founder-reported 2026-07-18). cine.js also eases harder on touch. */
   .cine-on .cine { height: 480vh; }
+  .cine-hint::after { content: "Swipe"; }   /* phones swipe, they don't scroll */
   .cine-stage { flex-direction: column; gap: 5svh; padding: 0 1.1rem; }
   .cine-hex { width: min(56vw, 240px); }
   .cine-copy { text-align: center; }
