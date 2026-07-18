@@ -104,11 +104,12 @@
     }
     tag.style.opacity = String(1 - seg(s, 0.3, 0.42));
 
-    /* B · seam glow: rests at the feature image's MUTED level; scrolling wakes
-       it with two firefly flicks (founder call 2026-07-18: flick, then return
-       to muted, never settle brighter), then it condenses into the firefly
-       point (s 0.30–0.58) exactly as before, fading from the muted level. */
-    var flick = 0.45 * bump(s, 0.07, 0.035) + 0.45 * bump(s, 0.15, 0.04);
+    /* B · seam glow: rests at the feature image's MUTED level; while the
+       letters glow (the ember window, s 0.02–0.34) it flicks twice, SLOW,
+       like a firefly (founder tuning 2026-07-18: two flicks spread across the
+       letter timeframe, return to muted, never settle brighter), then it
+       condenses into the firefly point (s 0.30–0.58), fading from muted. */
+    var flick = 0.45 * bump(s, 0.10, 0.07) + 0.45 * bump(s, 0.24, 0.08);
     var glowLevel = Math.min(1, 0.55 + flick);
     var g = ioCubic(seg(s, 0.3, 0.58));
     glows.forEach(function (el) {
