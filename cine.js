@@ -79,6 +79,8 @@
   /* a soft brightness bump centered on c with half-width w — one firefly blink */
   function bump(s, c, w) { var d = Math.abs(s - c); return d >= w ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * d / w); }
 
+  var COARSE = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
+
   function apply(s) {
     /* header targets → stage space, against the stage's live position */
     var sr = stage.getBoundingClientRect();
@@ -109,7 +111,12 @@
        like a firefly (founder tuning 2026-07-18: two flicks spread across the
        letter timeframe, return to muted, never settle brighter), then it
        condenses into the firefly point (s 0.30–0.58), fading from muted. */
-    var flick = 0.45 * bump(s, 0.10, 0.07) + 0.45 * bump(s, 0.24, 0.08);
+    /* desktop's track is shorter (340vh vs 480vh), so the same progress-width
+       passes quicker per wheel distance — wider bumps there only (founder:
+       desktop too fast, phones stay as approved) */
+    var flick = COARSE
+      ? 0.45 * bump(s, 0.10, 0.07) + 0.45 * bump(s, 0.24, 0.08)
+      : 0.45 * bump(s, 0.11, 0.10) + 0.45 * bump(s, 0.26, 0.11);
     var glowLevel = Math.min(1, 0.55 + flick);
     var g = ioCubic(seg(s, 0.3, 0.58));
     glows.forEach(function (el) {
@@ -175,8 +182,7 @@
   /* touch devices catch up more gently: a fling teleports scrollY, and the
      lower ease spreads that jump over more frames so the beats stay readable
      (mouse wheels feed small steady deltas - desktop keeps the snappier ease) */
-  var EASE = (window.matchMedia && matchMedia("(pointer: coarse)").matches)
-    ? 0.10 : 0.16;
+  var EASE = COARSE ? 0.10 : 0.16;
 
   var raf = null;
   var collapsed = false;
