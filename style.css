@@ -3,7 +3,9 @@
    typeface, self-hosted to match the logo wordmark and the admin dashboard). The
    look deliberately echoes the product's own UI — a sticky app bar, card panels,
    emerald CTAs — while keeping the printed-receipt feel of the demo blocks. No
-   frameworks, no network fonts, no JS; the font ships as one bundled .woff2.
+   frameworks, no network fonts; the font ships as one bundled .woff2. The only
+   JS is cine.js — the homepage's vanilla scroll-scrub hero, a pure progressive
+   enhancement (every page is complete without it).
    Custom-property names use --tilltrend (D-044 de-Plum). */
 
 /* Brand typeface — DM Sans, self-hosted (no CDN). One variable file, all weights. */
@@ -137,7 +139,6 @@ header.site > * { max-width: 58rem; }
   position: static; width: auto; height: auto;
   overflow: visible; clip: auto; white-space: nowrap;
 }
-.brand .tick { color: var(--leaf); margin-left: 0.12em; }
 header.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 0.4rem; align-items: center; margin-left: auto; }
 header.site nav a {
   color: var(--ink-soft);
@@ -386,4 +387,65 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
 
   th, td { padding: 0.4rem 0.55rem; overflow-wrap: anywhere; }
   table { display: block; overflow-x: auto; }
+}
+
+/* ---- cinematic hero (homepage) — the reverse-scrub brand scene (cine.js) ----
+   Route B vector scrub per DESIGN.md ("the light that shows its work").
+   OFF by default; an inline <head> guard adds .cine-on before first paint, so
+   no-JS and reduced-motion visitors get the unchanged page (zero CLS, nothing
+   gated). The ASSEMBLED scene is the CSS default state — cine.js only perturbs
+   it, so a script failure still leaves a complete static brand banner. */
+.cine { display: none; pointer-events: none; }
+.cine-on .cine { display: block; position: relative; height: 340vh; margin-top: -2.5rem; }
+.cine-stage {
+  position: sticky; top: 0;
+  height: 100vh; height: 100svh;
+  overflow: hidden;
+  display: flex; align-items: center; justify-content: center; gap: 5vw;
+  /* above the header glass (50) so the docking wordmark and homing firefly
+     never blur behind it, below the mobile nav drawer (60); pointer-events
+     stay off — the scene is decorative, the nav stays clickable through it */
+  z-index: 55;
+  /* no background: the scene sits on the page's own graphite, so unpinning at
+     the end of the scrub can never produce a background seam */
+}
+.cine-hex { width: min(44vmin, 380px); height: auto; flex: none; }
+.cine-hex .glow, .cine-hex .hx {
+  transform-box: fill-box; transform-origin: center;
+  will-change: transform, opacity;
+}
+.cine-copy { max-width: 34rem; }
+.cine-word {
+  font-weight: 700; font-size: clamp(2.6rem, 7vw, 4.8rem);
+  letter-spacing: -0.02em; line-height: 1; color: #fff;
+  transform-origin: 0 0; will-change: transform, opacity;
+}
+.cine-tag {
+  margin: 1.15rem 0 0; font-size: clamp(1.02rem, 2.2vw, 1.35rem);
+  color: #9fc7ab;                    /* lit-letter sage (DESIGN.md) */
+  letter-spacing: 0.01em; line-height: 1.5;
+}
+.cine-tag .w { display: inline-block; white-space: nowrap; }  /* wrap per word, never mid-word */
+.cine-tag .l { display: inline-block; will-change: opacity, color; }
+.cine-firefly {
+  position: absolute; left: 0; top: 0; width: 46px; height: 46px;
+  margin: -23px 0 0 -23px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle,
+    rgba(230,255,238,.5) 0%, #7dcd92 20%,
+    rgba(95,184,119,.55) 46%, rgba(95,184,119,0) 72%);
+  opacity: 0; will-change: transform, opacity;
+}
+.cine-hint {
+  /* the stage's bottom edge starts one header-height below the fold until the
+     sticky pin engages — lift the hint clear of it so it shows at page load */
+  position: absolute; left: 50%; bottom: calc(3.4rem + 4vh);
+  transform: translateX(-50%);
+  font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em;
+  text-transform: uppercase; color: var(--ink-soft);
+}
+@media (max-width: 640px) {
+  .cine-on .cine { height: 260vh; }   /* cheaper thumb-scroll on phones */
+  .cine-stage { flex-direction: column; gap: 5svh; padding: 0 1.1rem; }
+  .cine-hex { width: min(56vw, 240px); }
+  .cine-copy { text-align: center; }
 }
