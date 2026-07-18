@@ -167,9 +167,24 @@
   apply(shown);
 
   var raf = null;
+  var collapsed = false;
   function frame() {
     raf = null;
     target = progress();
+    /* sticky-failure fallback: mid-scrub the stage must be pinned (top ≈ 0).
+       If it scrolled away instead (an engine where an ancestor clip kills
+       position:sticky), collapse the track to a one-viewport static banner —
+       never a blank scroll run. */
+    if (!collapsed && target > 0.08 && target < 0.9 &&
+        stage.getBoundingClientRect().top < -80) {
+      collapsed = true;
+      section.style.height = "auto";
+      apply(0);
+      hint.style.opacity = "0";
+      brand.style.opacity = "";
+      window.removeEventListener("scroll", kick);
+      return;
+    }
     shown += (target - shown) * 0.16;
     if (Math.abs(target - shown) < 0.0005) shown = target;
     apply(shown);

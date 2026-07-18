@@ -60,7 +60,13 @@ body {
   font-size: 1.0625rem;
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
-  overflow-x: hidden;        /* belt-and-suspenders: never a sideways scroll on phones */
+  /* belt-and-suspenders: never a sideways scroll on phones. hidden is only the
+     fallback — it makes body a clip container, which KILLS position:sticky
+     descendants on mobile engines (the cine hero scrolled away leaving a blank
+     track; founder-reported 2026-07-18). clip gives the same protection
+     without creating a scroll container, so the sticky pin survives. */
+  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 h1, h2, h3 { font-family: var(--sans); line-height: 1.2; color: #fff; letter-spacing: -0.012em; }
@@ -364,9 +370,17 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
     backdrop-filter: blur(16px) saturate(120%);
     border-left: 1px solid rgba(255,255,255,.14);
     box-shadow: -14px 0 36px rgba(0,0,0,.45);
-    transform: translateX(105%); transition: transform .24s ease; overflow-y: auto;
+    /* parked drawer is visibility:hidden, not merely translated: a fixed
+       element's containing block is the VIEWPORT, so body's overflow-x can
+       never clip it - on phones the translated drawer became horizontally
+       pannable overflow (swipe-left "opened" it, and being fixed it ignored
+       vertical scroll; founder-reported 2026-07-18). Hidden, it creates no
+       overflow and takes no taps. visibility flips AFTER the slide-out. */
+    transform: translateX(105%); visibility: hidden;
+    transition: transform .24s ease, visibility 0s .24s; overflow-y: auto;
   }
-  .nav-cb:checked ~ nav { transform: translateX(0); }
+  .nav-cb:checked ~ nav { transform: translateX(0); visibility: visible;
+    transition: transform .24s ease; }
   header.site nav a { font-size: 1rem; padding: 0.7rem 0.8rem; border-radius: 9px; }
   header.site nav a.cta { text-align: center; margin-top: 0.45rem; }
 
