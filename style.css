@@ -356,6 +356,11 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
 
   /* --- hamburger nav: an off-canvas glass drawer, mirroring the app --- */
   body:has(#nav-toggle:checked) { overflow: hidden; }   /* lock scroll while open */
+  /* cine.js mirrors the checkbox into body.nav-open for engines without
+     :has() (Firefox <121, Safari <15.4, older WebViews). SEPARATE rules on
+     purpose: one unsupported selector in a list drops the whole rule in
+     exactly those engines. */
+  body.nav-open { overflow: hidden; }
   .nav-burger {
     display: inline-flex; align-items: center; justify-content: center;
     flex: none; margin-left: auto; width: 42px; height: 42px;
@@ -407,6 +412,7 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
      stage drops beneath the header context, so drawer + scrim stack above the
      scene like on any other page; on close it pops back for the dock beat. */
   body:has(#nav-toggle:checked) .cine-stage { z-index: 40; }
+  body.nav-open .cine-stage { z-index: 40; }   /* JS-mirrored :has() fallback */
 
   .hero { margin: 1rem 0 2rem; }
   .hero p.tagline { font-size: 1.1rem; }

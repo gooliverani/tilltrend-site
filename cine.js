@@ -79,7 +79,27 @@
   /* a soft brightness bump centered on c with half-width w — one firefly blink */
   function bump(s, c, w) { var d = Math.abs(s - c); return d >= w ? 0 : 0.5 + 0.5 * Math.cos(Math.PI * d / w); }
 
+  /* Two independent conditions (review fix: they shared one COARSE flag and
+     inverted on tablets and narrow windows):
+     - PHONE_TRACK mirrors the CSS track-length breakpoint (max-width: 640px,
+       480vh vs 340vh) — the flick bump widths are calibrated per track;
+     - COARSE is input physics — a thumb-fling teleports scrollY, so touch
+       eases harder whatever the viewport width. */
+  var mqTrack = window.matchMedia ? matchMedia("(max-width: 640px)") : null;
+  var PHONE_TRACK = !!(mqTrack && mqTrack.matches);
   var COARSE = !!(window.matchMedia && matchMedia("(pointer: coarse)").matches);
+
+  /* Drawer-over-scene without :has(): mirror the nav checkbox into a body
+     class so the z-drop + scroll-lock rules have a selector every engine
+     can match (style.css body.nav-open). */
+  var navCb = document.getElementById("nav-toggle");
+  if (navCb) {
+    var syncNav = function () {
+      document.body.classList.toggle("nav-open", navCb.checked);
+    };
+    navCb.addEventListener("change", syncNav);
+    syncNav();
+  }
 
   function apply(s) {
     /* header targets → stage space, against the stage's live position */
@@ -111,10 +131,11 @@
        like a firefly (founder tuning 2026-07-18: two flicks spread across the
        letter timeframe, return to muted, never settle brighter), then it
        condenses into the firefly point (s 0.30–0.58), fading from muted. */
-    /* desktop's track is shorter (340vh vs 480vh), so the same progress-width
-       passes quicker per wheel distance — wider bumps there only (founder:
-       desktop too fast, phones stay as approved) */
-    var flick = COARSE
+    /* the 340vh track is shorter than the phone 480vh one, so the same
+       progress-width passes quicker per wheel distance — wider bumps there
+       only (founder: desktop too fast, phones stay as approved). Keyed on
+       the TRACK breakpoint, not pointer type, so the pairing always holds. */
+    var flick = PHONE_TRACK
       ? 0.45 * bump(s, 0.10, 0.07) + 0.45 * bump(s, 0.24, 0.08)
       : 0.45 * bump(s, 0.11, 0.10) + 0.45 * bump(s, 0.26, 0.11);
     var glowLevel = Math.min(1, 0.55 + flick);
@@ -217,6 +238,11 @@
     clearTimeout(rsz);
     rsz = setTimeout(function () { measure(); kick(); }, 120);
   });
+  /* the CSS track height flips live at the breakpoint; keep the paired flick
+     widths in step */
+  if (mqTrack && mqTrack.addEventListener)
+    mqTrack.addEventListener("change",
+                             function (e) { PHONE_TRACK = e.matches; kick(); });
 
   window.__cineP = shown;
   window.__cineReady = true;
