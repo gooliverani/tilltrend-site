@@ -42,39 +42,50 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
   </nav>
 </header>
 
-<!-- Cinematic reverse-scrub hero (DESIGN.md: "the light that shows its work").
-     Decorative and additive: hidden without .cine-on, aria-hidden, and the CSS
-     default is the fully ASSEMBLED scene; cine.js only drives the scrub. The
-     scene is the real brand geometry (lockup polygons verbatim) with the glow
-     re-anchored on the true brand emerald per the founder's color correction. -->
+<!-- Cinematic firefly hero (the founder's Claude Design pair, 2026-07-20;
+     supersedes the D-079 reverse-scrub). The scene is the vector feature-image
+     master brought to life: glows, bevels, and polygons verbatim from
+     images/Tilltrend_logo/feature-image-1600x900.svg. Decorative and additive:
+     hidden without .cine-on, aria-hidden, and the CSS default is the fully
+     ASSEMBLED resting scene; cine.js only drives the flicker, the scroll
+     burn-out, and the dock into the header brand. -->
 <section class="cine" id="cine" aria-hidden="true">
   <div class="cine-stage">
-    <svg class="cine-hex" viewBox="-300 -290 600 580">
-      <defs>
-        <linearGradient id="cnFace" x1="0" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#34363b"/><stop offset="0.55" stop-color="#26282c"/><stop offset="1" stop-color="#191a1d"/></linearGradient>
-        <linearGradient id="cnBevel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#585b62"/><stop offset="0.5" stop-color="#303236"/><stop offset="1" stop-color="#0d0e10"/></linearGradient>
-        <radialGradient id="cnGlow"><stop offset="0" stop-color="#e6ffee" stop-opacity="0.30"/><stop offset="0.18" stop-color="#7dcd92" stop-opacity="0.75"/><stop offset="0.55" stop-color="#5FB877" stop-opacity="0.42"/><stop offset="1" stop-color="#5FB877" stop-opacity="0"/></radialGradient>
-      </defs>
-      <g class="cine-glows">
-        <circle class="glow" cx="18" cy="-80" r="150" fill="url(#cnGlow)"/>
-        <circle class="glow" cx="-78" cy="72" r="150" fill="url(#cnGlow)"/>
-        <ellipse class="glow" cx="55" cy="-10" rx="110" ry="85" fill="url(#cnGlow)"/>
-      </g>
-      <g class="cine-cluster">
-        <polygon class="hx" data-dx="-0.5" data-dy="-0.866" points="-86.60,-243.00 -6.06,-196.50 -6.06,-103.50 -86.60,-57.00 -167.14,-103.50 -167.14,-196.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
-        <polygon class="hx" data-dx="0.5" data-dy="-0.866" points="86.60,-243.00 167.14,-196.50 167.14,-103.50 86.60,-57.00 6.06,-103.50 6.06,-196.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
-        <polygon class="hx" data-dx="-1" data-dy="0" points="-173.21,-93.00 -92.66,-46.50 -92.66,46.50 -173.21,93.00 -253.75,46.50 -253.75,-46.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
-        <polygon class="hx" data-dx="0" data-dy="0" points="0.00,-93.00 80.54,-46.50 80.54,46.50 0.00,93.00 -80.54,46.50 -80.54,-46.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
-        <polygon class="hx" data-dx="1" data-dy="0" points="173.21,-93.00 253.75,-46.50 253.75,46.50 173.21,93.00 92.66,46.50 92.66,-46.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
-        <polygon class="hx" data-dx="-0.5" data-dy="0.866" points="-86.60,57.00 -6.06,103.50 -6.06,196.50 -86.60,243.00 -167.14,196.50 -167.14,103.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
-        <polygon class="hx" data-dx="0.5" data-dy="0.866" points="86.60,57.00 167.14,103.50 167.14,196.50 86.60,243.00 6.06,196.50 6.06,103.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
-      </g>
-    </svg>
-    <div class="cine-copy">
-      <div class="cine-word">Tilltrend</div>
-      <p class="cine-tag">Every number comes with a receipt.</p>
+    <div class="cine-lockup">
+      <svg class="cine-hex" viewBox="-254 -243 508 486">
+        <defs>
+          <linearGradient id="cnFace" x1="0" y1="0" x2="0.7" y2="1"><stop offset="0" stop-color="#34363b"/><stop offset="0.55" stop-color="#26282c"/><stop offset="1" stop-color="#191a1d"/></linearGradient>
+          <linearGradient id="cnBevel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#585b62"/><stop offset="0.5" stop-color="#303236"/><stop offset="1" stop-color="#0d0e10"/></linearGradient>
+          <radialGradient id="cnG1"><stop offset="0" stop-color="#7dcd92" stop-opacity="0.95"/><stop offset="0.45" stop-color="#5fb877" stop-opacity="0.55"/><stop offset="1" stop-color="#5fb877" stop-opacity="0"/></radialGradient>
+          <radialGradient id="cnG2"><stop offset="0" stop-color="#e6ffee" stop-opacity="1"/><stop offset="0.35" stop-color="#a6ecbb" stop-opacity="0.9"/><stop offset="1" stop-color="#7dcd92" stop-opacity="0"/></radialGradient>
+          <filter id="cnDs" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="7" stdDeviation="9" flood-color="#000" flood-opacity="0.55"/></filter>
+          <filter id="cnB1"><feGaussianBlur stdDeviation="11"/></filter>
+          <filter id="cnB2"><feGaussianBlur stdDeviation="4"/></filter>
+        </defs>
+        <g data-glow="main" filter="url(#cnB1)">
+          <circle cx="18" cy="-80" r="105" fill="url(#cnG1)"/>
+          <circle cx="-78" cy="72" r="105" fill="url(#cnG1)"/>
+          <ellipse cx="55" cy="-10" rx="70" ry="55" fill="url(#cnG1)"/>
+        </g>
+        <g data-glow="bloom" filter="url(#cnB2)">
+          <circle cx="14" cy="-82" r="55" fill="url(#cnG2)"/>
+          <circle cx="-80" cy="74" r="48" fill="url(#cnG2)"/>
+        </g>
+        <g filter="url(#cnDs)">
+          <polygon points="-86.60,-243.00 -6.06,-196.50 -6.06,-103.50 -86.60,-57.00 -167.14,-103.50 -167.14,-196.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="86.60,-243.00 167.14,-196.50 167.14,-103.50 86.60,-57.00 6.06,-103.50 6.06,-196.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="-173.21,-93.00 -92.66,-46.50 -92.66,46.50 -173.21,93.00 -253.75,46.50 -253.75,-46.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="0.00,-93.00 80.54,-46.50 80.54,46.50 0.00,93.00 -80.54,46.50 -80.54,-46.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="173.21,-93.00 253.75,-46.50 253.75,46.50 173.21,93.00 92.66,46.50 92.66,-46.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="-86.60,57.00 -6.06,103.50 -6.06,196.50 -86.60,243.00 -167.14,196.50 -167.14,103.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
+          <polygon points="86.60,57.00 167.14,103.50 167.14,196.50 86.60,243.00 6.06,196.50 6.06,103.50" fill="url(#cnFace)" stroke="url(#cnBevel)" stroke-width="3.5" stroke-linejoin="round"/>
+        </g>
+      </svg>
+      <div class="cine-copy">
+        <div class="cine-word">Tilltrend</div>
+        <p class="cine-tag">Every number comes with a receipt.</p>
+      </div>
     </div>
-    <div class="cine-firefly"></div>
     <div class="cine-hint" aria-hidden="true"></div>
   </div>
 </section>

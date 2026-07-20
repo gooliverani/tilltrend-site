@@ -426,58 +426,52 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
   table { display: block; overflow-x: auto; }
 }
 
-/* ---- cinematic hero (homepage) — the reverse-scrub brand scene (cine.js) ----
-   Route B vector scrub per DESIGN.md ("the light that shows its work").
-   OFF by default; an inline <head> guard adds .cine-on before first paint, so
-   no-JS and reduced-motion visitors get the unchanged page (zero CLS, nothing
-   gated). The ASSEMBLED scene is the CSS default state — cine.js only perturbs
-   it, so a script failure still leaves a complete static brand banner. */
+/* ---- cinematic hero (homepage): the firefly lockup scene (cine.js) ----
+   The founder's Claude Design pair (2026-07-20), superseding the reverse
+   scrub. OFF by default; an inline <head> guard adds .cine-on before first
+   paint, so no-JS and reduced-motion visitors get the unchanged page (zero
+   CLS, nothing gated). The ASSEMBLED resting scene is the CSS default state:
+   cine.js only perturbs it (flicker, burn-out, dock), so a script failure
+   still leaves a complete static brand banner. */
 .cine { display: none; pointer-events: none; }
-.cine-on .cine { display: block; position: relative; height: 340vh; margin-top: -2.5rem; }
+.cine-on .cine { display: block; position: relative; height: 260vh; margin-top: -2.5rem; }
 .cine-stage {
   position: sticky; top: 0;
   height: 100vh; height: 100svh;
   overflow: hidden;
-  display: flex; align-items: center; justify-content: center; gap: 5vw;
-  /* above the header glass (50) so the docking wordmark and homing firefly
-     never blur behind it, below the mobile nav drawer (60); pointer-events
-     stay off — the scene is decorative, the nav stays clickable through it */
+  display: flex; align-items: center; justify-content: center;
+  /* above the header glass (50) so the docking lockup never blurs behind it,
+     below the mobile nav drawer (60); pointer-events stay off: the scene is
+     decorative, the nav stays clickable through it */
   z-index: 55;
   /* no background: the scene sits on the page's own graphite, so unpinning at
      the end of the scrub can never produce a background seam */
 }
-.cine-hex { width: min(44vmin, 380px); height: auto; flex: none; }
-.cine-hex .glow, .cine-hex .hx {
-  transform-box: fill-box; transform-origin: center;
-  will-change: transform, opacity;
+.cine-lockup {
+  display: flex; align-items: center; gap: clamp(2rem, 4vw, 60px);
+  /* the dock math maps the lockup's top-left corner (cine.js) */
+  transform-origin: 0 0; will-change: transform, opacity;
 }
-/* rest state matches the feature image: the glow sits muted; only the firefly
-   flicks pulse it (cine.js). This is also the static no-JS fallback look. */
-.cine-hex .glow { opacity: 0.55; }
+.cine-hex { width: min(37vmin, 320px); height: auto; flex: none; overflow: visible; }
+/* rest state = the feature image: glows at the muted level, bloom at half.
+   This is also the static no-JS fallback look; cine.js drives the flicker. */
+.cine-hex [data-glow="main"] { opacity: 0.55; will-change: opacity; }
+.cine-hex [data-glow="bloom"] { opacity: 0.28; will-change: opacity; }
 .cine-copy { max-width: 34rem; }
 .cine-word {
   font-weight: 700; font-size: clamp(2.6rem, 7vw, 4.8rem);
   letter-spacing: -0.02em; line-height: 1; color: #fff;
-  transform-origin: 0 0; will-change: transform, opacity;
 }
 .cine-tag {
   margin: 1.15rem 0 0; font-size: clamp(1.02rem, 2.2vw, 1.35rem);
-  color: #9fc7ab;                    /* lit-letter sage (DESIGN.md) */
+  color: #96bea0;              /* tagline sage, verbatim from the feature-image master */
   letter-spacing: 0.01em; line-height: 1.5;
 }
 .cine-tag .w { display: inline-block; white-space: nowrap; }  /* wrap per word, never mid-word */
-.cine-tag .l { display: inline-block; will-change: opacity, color; }
-.cine-firefly {
-  position: absolute; left: 0; top: 0; width: 46px; height: 46px;
-  margin: -23px 0 0 -23px; border-radius: 50%; pointer-events: none;
-  background: radial-gradient(circle,
-    rgba(230,255,238,.5) 0%, #7dcd92 20%,
-    rgba(95,184,119,.55) 46%, rgba(95,184,119,0) 72%);
-  opacity: 0; will-change: transform, opacity;
-}
+.cine-tag .l { display: inline-block; opacity: 0.92; will-change: opacity; }
 .cine-hint {
   /* the stage's bottom edge starts one header-height below the fold until the
-     sticky pin engages — lift the hint clear of it so it shows at page load */
+     sticky pin engages; lift the hint clear of it so it shows at page load */
   position: absolute; left: 50%; bottom: calc(3.4rem + 4vh);
   transform: translateX(-50%);
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em;
@@ -485,13 +479,15 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
 }
 .cine-hint::after { content: "Scroll"; }
 @media (max-width: 640px) {
-  /* LONGER track than desktop (340vh), not shorter: a thumb-fling covers
+  /* LONGER track than desktop (260vh), not shorter: a thumb-fling covers
      several viewports where a wheel tick covers ~200px, so per-gesture
      progress must be diluted or the whole story plays in two swipes
-     (founder-reported 2026-07-18). cine.js also eases harder on touch. */
-  .cine-on .cine { height: 480vh; }
+     (founder-reported 2026-07-18; ratio carried from the 340/480 pairing).
+     cine.js also eases harder on touch. */
+  .cine-on .cine { height: 420vh; }
   .cine-hint::after { content: "Swipe"; }   /* phones swipe, they don't scroll */
-  .cine-stage { flex-direction: column; gap: 5svh; padding: 0 1.1rem; }
-  .cine-hex { width: min(56vw, 240px); }
+  .cine-stage { padding: 0 1.1rem; }
+  .cine-lockup { flex-direction: column; gap: 5svh; }
+  .cine-hex { width: min(47vw, 200px); }
   .cine-copy { text-align: center; }
 }
