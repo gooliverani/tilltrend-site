@@ -2,9 +2,10 @@
    supersedes the D-079 reverse-scrub). The scene rests ASSEMBLED and alive:
    the seam glow and every unburned tagline letter flicker like fireflies on a
    shared multi-sine clock. Scroll burns the sentence out letter by letter in a
-   golden-ratio scatter (never reading order), settles the glow to a dimmer
-   flicker, then shrinks the whole lockup into the header's 30px brand icon
-   while the header brand crossfades in: the light goes home to the logo.
+   golden-ratio scatter (never reading order), fades the wordmark out with it,
+   settles the glow to a dimmer flicker, then shrinks the mark into the
+   header's 30px brand icon while the header brand crossfades in: the light
+   goes home to the logo.
 
    Fail-open: the assembled scene is the CSS default; this file only perturbs
    it, so any error leaves a complete static banner and a normal header.
@@ -28,6 +29,7 @@
   var lockup = section.querySelector(".cine-lockup");
   var hexSvg = section.querySelector(".cine-hex");
   var tag = section.querySelector(".cine-tag");
+  var word = section.querySelector(".cine-word");
   var hint = section.querySelector(".cine-hint");
   var brand = document.querySelector("header.site .brand");
   var glowMain = hexSvg.querySelector('[data-glow="main"]');
@@ -133,6 +135,9 @@
       else o = 0.05;
       letters[i].style.opacity = String(o);
     }
+
+    /* wordmark: burns out with the tagline, so only the mark docks home */
+    if (word) word.style.opacity = String(1 - seg(p1, 0.55, 0.95));
 
     /* dock: shrink the WHOLE lockup so the mark lands exactly on the header
        icon box, then crossfade lockup out / header brand in */

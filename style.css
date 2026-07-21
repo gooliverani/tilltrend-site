@@ -461,6 +461,7 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
 .cine-word {
   font-weight: 700; font-size: clamp(2.6rem, 7vw, 4.8rem);
   letter-spacing: -0.02em; line-height: 1; color: #fff;
+  will-change: opacity;              /* burns out with the tagline during the scrub */
 }
 .cine-tag {
   margin: 1.15rem 0 0; font-size: clamp(1.02rem, 2.2vw, 1.35rem);
