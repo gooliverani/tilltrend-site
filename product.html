@@ -96,7 +96,7 @@ predicted signature. Commands and observed results are on the
 
 <p>When the data to answer a question doesn't exist, Tilltrend says so, in
 governed text quoted from the metric documentation, not model improvisation.
-Verbatim, from a real run on 2026-06-13:</p>
+Verbatim, from a real run on 2026-06-13; re-run 2026-07-26, byte-identical:</p>
 
 <div class="receipt">
   <div class="label">Real output &middot; <code>python app\scripts\ask.py "Show me the conversion funnel"</code></div>
@@ -116,9 +116,9 @@ pre-purchase funnel steps, so the product refuses rather than approximates.</p>
 
 <h2>The admin app today</h2>
 
-<p>Six server-rendered pages exist now. Every number on them is queried live at
-render time using the canonical SQL from the governed metric definitions, and
-each KPI is footnoted with its metric id.</p>
+<p>Eight server-rendered pages exist now. Every number on them is queried live
+at render time using the canonical SQL from the governed metric definitions,
+and each KPI is footnoted with its metric id.</p>
 
 <table>
   <tr><th>Page</th><th>What it shows</th></tr>
@@ -126,7 +126,9 @@ each KPI is footnoted with its metric id.</p>
   <tr><td><strong>Trends</strong></td><td>Sales over time at the grain you pick (day, week, month, quarter, or year) as a line/area chart with a running total, a trailing moving average, and period-over-period (and year-over-year) change. Built on governed time-series views (window functions over the fact table); a period with no sales reads as an honest 0, partial edge periods are flagged, and a change with no prior period says so rather than inventing one.</td></tr>
   <tr><td><strong>Products</strong></td><td>Top products by revenue (server-side SVG bar chart) with a units / orders / distinct-buyers table and a category-mix breakdown, each figure from the governed product-performance metric.</td></tr>
   <tr><td><strong>Cohorts</strong></td><td>The full cohort-retention matrix; sparse cells are labeled "zero, not missing", with the governed cohort definition quoted on the page.</td></tr>
-  <tr><td><strong>Ask</strong></td><td>A chat surface. Renders the exact two-section answer (receipted facts with receipt ids and hashes, interpretation visibly tagged as model prose) and, beneath every answer, <strong>the exact SQL the deterministic layer ran</strong>, a per-receipt replay command, and the post-check status.</td></tr>
+  <tr><td><strong>Ask</strong></td><td>A chat surface. An answer opens with a readable card built from the stored receipt: a single figure shown large, a multi-row result as a real table, money in your store's currency. The exact audited text sits one click away, unchanged to the character, and beneath every answer: <strong>the exact SQL the deterministic layer ran</strong>, a per-receipt replay command, and the post-check status. The model's optional interpretation stays visibly tagged as model prose.</td></tr>
+  <tr><td><strong>Export</strong></td><td>The BI export: a zip of governed CSVs with a data dictionary that documents the table joins, plus a personal API token that opens exactly one read-only endpoint for BI tools.</td></tr>
+  <tr><td><strong>Report</strong></td><td>The Store Data Health-Check as a printable page, one click from the dashboard (Ctrl+P to PDF): the same governed report as the <a href="sample-report.html">public sample</a>, rendered on your own store.</td></tr>
   <tr><td><strong>Audit</strong></td><td>The append-only audit log: every query, every tool call, every rejection and refusal, with the warehouse build id on each row.</td></tr>
 </table>
 
@@ -145,9 +147,11 @@ each KPI is footnoted with its metric id.</p>
   shown above.</li>
   <li><strong>Promo performance</strong> (discount uptake, promo ROI): requires
   a promotions/discounts source; the current demo extract has none.</li>
-  <li><strong>Store connectors</strong>: the warehouse currently builds from
-  CSV extracts. A Shopify connector is planned as the first integration; it does
-  not exist yet, and we won't describe it as if it did.</li>
+  <li><strong>A public App Store listing</strong>: the Shopify connector itself
+  exists and powers the live app (OAuth install, nightly refresh, on-demand
+  sync); what does not exist yet is the public listing. Installs are by private
+  link today, and the listing waits on our legal pack (privacy and terms). We
+  won't publish it before those are real.</li>
 </ul>
 
 <h2>Architecture, for technical readers</h2>

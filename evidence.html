@@ -233,7 +233,8 @@ python app\scripts\run_quality_checks.py</code></pre>
     pre-purchase steps, and no proxy is acceptable. The refusal is written to
     the audit log.</dd>
     <dt>Observed</dt>
-    <dd><span class="observed">2026-06-13: governed refusal, verbatim</span>:
+    <dd><span class="observed">2026-06-13, re-run 2026-07-26 byte-identical:
+    governed refusal, verbatim</span>:
     "Not yet supported (session_funnel), per app/docs/metrics.md: visits →
     product views → add-to-cart → checkout → purchase conversion. Requires an
     event-stream connector (storefront analytics)." (Full output on the
@@ -247,14 +248,16 @@ python app\scripts\run_quality_checks.py</code></pre>
     <dt>Reproduce</dt>
     <dd><pre><code>python app\scripts\smoke_admin.py</code></pre></dd>
     <dt>What you should observe</dt>
-    <dd>31 deterministic checks: all five admin pages render with the real
-    governed values (total revenue 29,356,250; 2013-07 = 1,371,595; cohort
-    2013-01 retention 5.23%; the live warehouse fingerprint), the deterministic
-    Ask path returns receipted facts with a receipt id, and the JSON API stays
+    <dd>66 deterministic checks: the admin pages render with the real governed
+    values, read live from the active warehouse at runtime (on the public demo
+    build: total revenue 29,356,250; 2013-07 = 1,371,595; cohort 2013-01
+    retention 5.23%; the live warehouse fingerprint), the deterministic Ask
+    path returns receipted facts with a receipt id, and the JSON API stays
     unbroken.</dd>
     <dt>Observed</dt>
-    <dd><span class="observed">2026-06-13: SMOKE_ADMIN PASSED, all checks
-    green.</span></dd>
+    <dd><span class="observed">2026-06-13 and re-run 2026-07-26: SMOKE_ADMIN
+    PASSED, all checks green (66 today; the check suite has grown with the app
+    since the first run's 31).</span></dd>
   </dl>
 </div>
 
