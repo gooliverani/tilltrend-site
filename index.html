@@ -125,30 +125,52 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
 
 <h2>What an answer actually looks like</h2>
 
-<p>This is not a mockup. It is the verbatim terminal output of the product
-answering "What was total revenue?", run on 2026-06-13 against the demo
-warehouse. Reproduce it yourself with:</p>
+<p>This is not a mockup. Everything below comes from one real run of the
+product answering "What was total revenue?", executed 2026-07-26 against the
+demo warehouse. Reproduce it yourself with:</p>
 
 <pre><code>python app\scripts\ask.py "What was total revenue?"</code></pre>
+
+<p>In the app, the answer opens as a readable card built from the stored
+receipt. Two renderings of one stored value: the card formats it as money at
+the display layer, the receipt keeps the exact number.</p>
+
+<div class="answer-cards" aria-label="What the app shows first">
+  <div class="acard">
+    <div class="acard-head"><span class="acard-metric">Total revenue</span>
+    <span class="acard-scope">all time</span></div>
+    <div class="acard-big">$29,356,250.00</div>
+    <ul class="acard-caveats"><li>Gross revenue only: the source has no cancellation/refund data.</li></ul>
+  </div>
+  <div class="acard acard-interp">
+    <div class="acard-head"><span class="acard-metric">What this means</span>
+    <span class="acard-scope">model prose, not receipted</span></div>
+    <p class="acard-prose">Total revenue across all time was 29,356,250. This figure represents gross revenue only; the underlying source lacks cancellation and refund data, so the net revenue after adjustments may differ from this amount.</p>
+  </div>
+</div>
+
+<p>The exact audited text stays one click away in the app, unchanged to the
+character. Here it is in full: the verbatim terminal output of that same
+run.</p>
 
 <div class="receipt">
   <div class="label">Real output &middot; demo dataset (public training data, 2010&ndash;2014 bike sales, not real merchants)</div>
 <pre>question: What was total revenue?
-turn:     turn_aba83b83e19d   mode: model   model: claude-haiku-4-5-20251001
+turn:     turn_7333a781e9ba   mode: model   model: claude-haiku-4-5-20251001
 
 RECEIPTED FACTS
 ===============
-(1) [run_metric] total_revenue (all time)  &lt;rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a&gt;
+(1) [run_metric] total_revenue (all time)  &lt;rcp_1e047258878c43cba3b21d673a7ccbc5 | sha256:2bb5a5c95744d84e&gt;
   total_revenue = 29,356,250
-  caveat: Gross revenue only — the source has no cancellation/refund data.
+  caveat: Gross revenue only: the source has no cancellation/refund data.
 
 INTERPRETATION (model, not receipted)
 =====================================
-| Total revenue across all time is 29,356,250. This figure represents gross revenue; the underlying data does not include information on cancellations or refunds, so the actual net revenue may differ.
+| Total revenue across all time was 29,356,250. This figure represents gross revenue only; the underlying source lacks cancellation and refund data, so the net revenue after adjustments may differ from this amount.
 
 receipts:
-  rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a
-replay:   python app\scripts\replay.py rcp_c60c017f43c346328383448a66088735
+  rcp_1e047258878c43cba3b21d673a7ccbc5 | sha256:2bb5a5c95744d84e
+replay:   python app\scripts\replay.py rcp_1e047258878c43cba3b21d673a7ccbc5
 postcheck: PASS (attempts=1)</pre>
 </div>
 

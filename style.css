@@ -239,6 +239,24 @@ header.site nav a[aria-current="page"] { color: #fff; background: rgba(95,184,11
 }
 .receipt pre { border: none; margin: 0; background: none; border-radius: 0; }
 
+/* the readable answer card (index demo) — what the app shows first since the
+   D-089/D-094 readable view; the verbatim receipt block below it remains the
+   source of truth, exactly as in the app */
+.answer-cards { display: grid; gap: 1.1rem; margin: 1.25rem 0; }
+.acard { background: var(--card); border: 1px solid var(--rule);
+  border-radius: 12px; padding: 1rem 1.3rem; box-shadow: var(--shadow); }
+.acard-head { display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: 0.25rem 0.7rem; margin-bottom: 0.55rem; }
+.acard-metric { font-weight: 700; color: #fff; }
+.acard-scope { font-size: 0.82rem; color: var(--ink-soft); }
+.acard-big { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em;
+  color: #fff; font-variant-numeric: tabular-nums; }
+.acard-caveats { margin: 0.7rem 0 0; padding-left: 1.15rem;
+  font-size: 0.85rem; color: var(--ink-soft); }
+.acard-caveats li { margin: 0.2rem 0; }
+.acard-interp { border-left: 3px solid var(--leaf); }
+.acard-prose { margin: 0; font-size: 0.95rem; line-height: 1.55; }
+
 /* evidence rows — emerald left border marks them verified */
 .claim-row {
   background: var(--card);
