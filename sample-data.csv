@@ -5,7 +5,7 @@
 125,BK-M68S-46,Mountain-200 Silver- 46,Bikes,Mountain Bikes,Mountain,1301029,580,580,567
 120,BK-M68B-38,Mountain-200 Black- 38,Bikes,Mountain Bikes,Mountain,1294854,582,582,565
 
-# Tilltrend receipt — provenance of the rows above
+# Tilltrend receipt: provenance of the rows above
 metric,product_performance
 tool,run_metric
 question,product_performance
