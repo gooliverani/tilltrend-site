@@ -7,6 +7,11 @@
 #     gh workflow run uptime -f simulate=fail
 # - Heads-up: GitHub disables cron workflows after ~60 days without repo activity;
 #   routine site publishes keep this alive.
+# - CADENCE (tilltrend D-257): the */15 schedule below is NOT what runs this every
+#   15 min. GitHub thinned it to about 7 runs a day from 2026-08-26. A Cloudflare
+#   Worker (tilltrend repo, app/deploy/uptime-trigger) dispatches it at :07 :22 :37
+#   :52. The schedule stays as the slow backstop, and its runs also check that the
+#   Worker is still dispatching (last step), so a dead trigger emails as a failure.
 name: uptime
 
 on:
@@ -19,7 +24,8 @@ on:
         required: false
         default: ""
 
-permissions: {}
+permissions:
+  actions: read
 
 jobs:
   health:
@@ -59,5 +65,24 @@ jobs:
             echo 'deep health: "status": "ok"'
           else
             echo "::error::/health responded but status is not ok (payload withheld from public log)"
+            exit 1
+          fi
+
+      - name: Trigger freshness (scheduled runs only)
+        if: ${{ github.event_name == 'schedule' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MAX_AGE_MIN: "60"
+        run: |
+          newest=$(gh run list -R "$GITHUB_REPOSITORY" --workflow uptime.yml \
+            --event workflow_dispatch --limit 1 --json createdAt --jq '.[0].createdAt // empty')
+          if [ -z "$newest" ]; then
+            echo "::error::no dispatched uptime run exists: the Cloudflare trigger has never run"
+            exit 1
+          fi
+          age_min=$(( ($(date -u +%s) - $(date -u -d "$newest" +%s)) / 60 ))
+          echo "newest dispatched run: $newest ($age_min min ago, limit $MAX_AGE_MIN)"
+          if [ "$age_min" -gt "$MAX_AGE_MIN" ]; then
+            echo "::error::no dispatched run for $age_min min: the Cloudflare trigger has stopped (expired token, deleted Worker?), so outage detection is back to GitHub's schedule"
             exit 1
           fi
