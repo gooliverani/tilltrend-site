@@ -2,6 +2,10 @@
 # - Stage 1 (no credentials): expects HTTP 200/401 - proves edge + tunnel + app.
 # - Stage 2 (TILLTREND_HEALTH_AUTH secret, if set): authenticated /health must be
 #   HTTP 200 with "status": "ok"; the response body is never printed (public logs).
+# - Stage 3, once a day in the 14:00Z hour (tilltrend D-264): the SAME body must
+#   report every warehouse fresh for its own night and the scheduler on. Counts
+#   only; shop names stay out of this public log. Test it any time with:
+#     gh workflow run uptime -f freshness=now
 # - Failure of any run emails the repo owner (default GitHub Actions notifications)
 #   = the S3 downtime alert. Test the alert path with:
 #     gh workflow run uptime -f simulate=fail
@@ -21,6 +25,10 @@ on:
     inputs:
       simulate:
         description: "Set to 'fail' to test the failure alert"
+        required: false
+        default: ""
+      freshness:
+        description: "Set to 'now' to run the daily warehouse-freshness assertion outside its 14:00Z window"
         required: false
         default: ""
 
@@ -51,6 +59,7 @@ jobs:
       - name: Deep health (authenticated, payload never logged)
         env:
           AUTH: ${{ secrets.TILLTREND_HEALTH_AUTH }}
+          FRESHNESS: ${{ inputs.freshness }}
         run: |
           if [ -z "$AUTH" ]; then
             echo "no TILLTREND_HEALTH_AUTH secret configured - skipping deep check"
@@ -66,6 +75,42 @@ jobs:
           else
             echo "::error::/health responded but status is not ok (payload withheld from public log)"
             exit 1
+          fi
+
+          # WAREHOUSE FRESHNESS (tilltrend D-264). The body just fetched already
+          # carries the refresh block (D-263), so this costs no request and no new
+          # credential. A stale store does NOT degrade "status" by design, so it can
+          # only be seen by reading refresh.stale.
+          #
+          # WHY IT LIVES IN THE LIVENESS WORKFLOW RATHER THAN A DAILY ONE OF ITS OWN.
+          # A standalone daily cron is the exact mechanism D-257 measured as
+          # unreliable here (GitHub thinned */15 to about 7 runs a day), and a watcher
+          # that silently does not run is the D-262 failure all over again. This step
+          # runs on every Worker dispatch, so its absence is already alarmed by the
+          # trigger-freshness step below.
+          #
+          # IT ONLY ACTS ONCE A DAY. A failed night is not retried (nightly.is_due
+          # returns False once an attempt is recorded), so a stale store stays stale
+          # until the next night: acting on every run would mean about 96 emails for
+          # one miss. 14:00Z is at least six hours after the 03:00-local night of a US
+          # Eastern store. It is safe for store zones from UTC-8 eastward; a store
+          # further west could be flagged before its own hourly tick reaches it.
+          if [ "$FRESHNESS" = "now" ] || { [ "$(date -u +%H)" = "14" ] && [ "$(date -u +%M)" -lt 15 ]; }; then
+            if ! printf '%s' "$body" | jq -e 'has("refresh")' >/dev/null 2>&1; then
+              echo "::notice::/health carries no refresh block - freshness not checked (code older than D-263?)"
+            else
+              stale=$(printf '%s' "$body" | jq -r '(.refresh.stale // []) | length')
+              sched=$(printf '%s' "$body" | jq -r '.refresh.scheduler // "unknown"')
+              echo "warehouse freshness: $stale past their own night, scheduler $sched"
+              if [ "$sched" != "on" ]; then
+                echo "::error::the nightly scheduler reports '$sched', so no store will refresh tonight"
+                exit 1
+              fi
+              if [ "$stale" != "0" ]; then
+                echo "::error::$stale warehouse(s) missed their own night; the shop names are in refresh.stale on /health and are withheld from this public log"
+                exit 1
+              fi
+            fi
           fi
 
       - name: Trigger freshness (scheduled runs only)
