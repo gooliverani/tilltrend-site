@@ -3,8 +3,9 @@
 # - Stage 2 (TILLTREND_HEALTH_AUTH secret, if set): authenticated /health must be
 #   HTTP 200 with "status": "ok"; the response body is never printed (public logs).
 # - Stage 3, once a day in the 14:00Z hour (tilltrend D-264): the SAME body must
-#   report every warehouse fresh for its own night and the scheduler on. Counts
-#   only; shop names stay out of this public log. Test it any time with:
+#   report every warehouse fresh for its own night and the scheduler on, and
+#   (D-265) at least one warehouse observed by a thread that checked within 3 h.
+#   Counts only; shop names stay out of this public log. Test it any time with:
 #     gh workflow run uptime -f freshness=now
 # - Failure of any run emails the repo owner (default GitHub Actions notifications)
 #   = the S3 downtime alert. Test the alert path with:
@@ -99,11 +100,37 @@ jobs:
             if ! printf '%s' "$body" | jq -e 'has("refresh")' >/dev/null 2>&1; then
               echo "::notice::/health carries no refresh block - freshness not checked (code older than D-263?)"
             else
+              # WHAT "0 STALE" CANNOT SAY ON ITS OWN (tilltrend D-265). `scheduler` is
+              # only the env switch, so "on" is not a live thread. `stale` is empty
+              # when nothing was observed at all, which D-263 said must never read as
+              # healthy. `checked_at` is the one field that moves only while the thread
+              # ticks (hourly), so a hung or dead scheduler shows here the same day,
+              # where staleness would wait for the next night and an empty
+              # observation set would never show. The warehouse total is asserted
+              # and never printed: it is a count of installed stores.
               stale=$(printf '%s' "$body" | jq -r '(.refresh.stale // []) | length')
               sched=$(printf '%s' "$body" | jq -r '.refresh.scheduler // "unknown"')
-              echo "warehouse freshness: $stale past their own night, scheduler $sched"
+              seen=$(printf '%s' "$body" | jq -r '.refresh.warehouses // 0')
+              checked=$(printf '%s' "$body" | jq -r '.refresh.checked_at // empty')
+              age_min=""
+              if [ -n "$checked" ] && checked_s=$(date -u -d "$checked" +%s 2>/dev/null); then
+                age_min=$(( ($(date -u +%s) - checked_s) / 60 ))
+              fi
+              echo "warehouse freshness: $stale past their own night, scheduler $sched, last check ${age_min:-unknown} min ago"
               if [ "$sched" != "on" ]; then
                 echo "::error::the nightly scheduler reports '$sched', so no store will refresh tonight"
+                exit 1
+              fi
+              if ! [ "$seen" -gt 0 ] 2>/dev/null; then
+                echo "::error::the scheduler has observed no warehouse since the app started, so '0 past their own night' checked nothing"
+                exit 1
+              fi
+              if [ -z "$age_min" ]; then
+                echo "::error::refresh.checked_at is missing or unreadable, so nothing shows the scheduler thread is ticking"
+                exit 1
+              fi
+              if [ "$age_min" -gt 180 ]; then
+                echo "::error::the scheduler's newest observation is $age_min min old; it checks hourly, so its thread has stopped or hung"
                 exit 1
               fi
               if [ "$stale" != "0" ]; then
