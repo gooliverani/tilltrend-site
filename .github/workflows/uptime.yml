@@ -4,8 +4,9 @@
 #   HTTP 200 with "status": "ok"; the response body is never printed (public logs).
 # - Stage 3, once a day in the 14:00Z hour (tilltrend D-264): the SAME body must
 #   report every warehouse fresh for its own night and the scheduler on, and
-#   (D-265) at least one warehouse observed by a thread that checked within 3 h.
-#   Counts only; shop names stay out of this public log. Test it any time with:
+#   (D-265) at least one warehouse observed by a thread that checked within 3 h,
+#   and (D-268) the host must not be waiting on a reboot.
+#   Counts only; shop and package names stay out of this public log. Test it any time with:
 #     gh workflow run uptime -f freshness=now
 # - Failure of any run emails the repo owner (default GitHub Actions notifications)
 #   = the S3 downtime alert. Test the alert path with:
@@ -30,7 +31,7 @@ on:
         required: false
         default: ""
       freshness:
-        description: "Set to 'now' to run the daily warehouse-freshness assertion outside its 14:00Z window"
+        description: "Set to 'now' to run the daily freshness and pending-reboot assertions outside their 14:00Z window"
         required: false
         default: ""
 
@@ -98,6 +99,33 @@ jobs:
           # Eastern store. It is safe for store zones from UTC-8 eastward; a store
           # further west could be flagged before its own hourly tick reaches it.
           if [ "$FRESHNESS" = "now" ] || { [ "$(date -u +%H)" = "14" ] && [ "$(date -u +%M)" -lt 15 ]; }; then
+            # PENDING REBOOT (tilltrend D-268), the one HOST fact /health carries.
+            # A kernel update takes effect only on a reboot and nothing applies it
+            # unattended, so on 2026-09-24 four kernels had queued since 2026-09-10
+            # or earlier while every check here stayed green. It FAILS the run, one
+            # email a day in this window, rather than warning, on the founder's
+            # call: a warning is a line nobody reads, which is how the flag went
+            # unseen. Read first, failed last, so a stale store and a pending
+            # reboot both show on the same day. Package names stay in
+            # host.packages on /health.
+            host_fail=""
+            if ! printf '%s' "$body" | jq -e 'has("host")' >/dev/null 2>&1; then
+              echo "::notice::/health carries no host block - reboot flag not checked (code older than D-268?)"
+            else
+              # tostring, never `// "unknown"`: jq's alternative operator treats
+              # false as missing, so "nothing pending" would read as unknown.
+              reboot=$(printf '%s' "$body" | jq -r '.host.reboot_required | tostring')
+              echo "host: reboot required $reboot"
+              case "$reboot" in
+                false) ;;
+                true)
+                  echo "::error::the host has installed updates that take effect only on a reboot; reboot at a convenient moment (tilltrend app/docs/deploy-cloud.md, Day-2 ops). Package names are in host.packages on /health and are withheld from this public log"
+                  host_fail=1 ;;
+                *)
+                  echo "::error::the host block could not read the reboot flag (reboot_required is $reboot), so a pending reboot would go unseen; the reason is in host.error on /health"
+                  host_fail=1 ;;
+              esac
+            fi
             if ! printf '%s' "$body" | jq -e 'has("refresh")' >/dev/null 2>&1; then
               echo "::notice::/health carries no refresh block - freshness not checked (code older than D-263?)"
             else
@@ -138,6 +166,9 @@ jobs:
                 echo "::error::$stale warehouse(s) missed their own night; the shop names are in refresh.stale on /health and are withheld from this public log"
                 exit 1
               fi
+            fi
+            if [ -n "$host_fail" ]; then
+              exit 1
             fi
           fi
 
