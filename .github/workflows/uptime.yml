@@ -95,9 +95,16 @@ jobs:
           # IT ONLY ACTS ONCE A DAY. A failed night is not retried (nightly.is_due
           # returns False once an attempt is recorded), so a stale store stays stale
           # until the next night: acting on every run would mean about 96 emails for
-          # one miss. 14:00Z is at least six hours after the 03:00-local night of a US
-          # Eastern store. It is safe for store zones from UTC-8 eastward; a store
-          # further west could be flagged before its own hourly tick reaches it.
+          # one miss. THIS WINDOW IS SAFE FOR EVERY STORE ZONE (swept over all of them
+          # at 14:00, 14:08 and 14:14Z for a year of nights), because the app counts a
+          # night against a store only two hours after its 03:00 (tilltrend D-269,
+          # nightly.SETTLE): the tick that syncs a store records the build from
+          # BEFORE the sync, so for an hour after its night every healthy store read
+          # stale. Until D-269 this comment said "safe from UTC-8 eastward", and it
+          # was wrong: a store whose 03:00 falls at 14:00Z (New Zealand in summer,
+          # Samoa, Tonga) failed this read on every healthy night. The cost is that
+          # a store whose night begins in the two hours before this read is named a
+          # day late: Hawaii and Tahiti, among others, 25 hours after the miss.
           if [ "$FRESHNESS" = "now" ] || { [ "$(date -u +%H)" = "14" ] && [ "$(date -u +%M)" -lt 15 ]; }; then
             # PENDING REBOOT (tilltrend D-268), the one HOST fact /health carries.
             # A kernel update takes effect only on a reboot and nothing applies it
