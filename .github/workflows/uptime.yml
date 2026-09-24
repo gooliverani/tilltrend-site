@@ -16,7 +16,8 @@
 #   15 min. GitHub thinned it to about 7 runs a day from 2026-08-26. A Cloudflare
 #   Worker (tilltrend repo, app/deploy/uptime-trigger) dispatches it at :07 :22 :37
 #   :52. The schedule stays as the slow backstop, and its runs also check that the
-#   Worker is still dispatching (last step), so a dead trigger emails as a failure.
+#   Worker is still dispatching (last step), so a dead trigger emails as a failure,
+#   once two differently-shaped readings of the run list agree (D-266).
 name: uptime
 
 on:
@@ -145,16 +146,50 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           MAX_AGE_MIN: "60"
+        # TWO READINGS MUST AGREE BEFORE THIS EMAILS (tilltrend D-266). On
+        # 2026-09-24T12:15:42Z this query answered 2026-07-04T09:03:23Z, the newest
+        # dispatched run that existed BEFORE the Worker started on 2026-09-16, as if
+        # it read a view eight days old; the Worker had dispatched 8 min earlier.
+        # The same query was right on the 54 other scheduled runs since 2026-09-16
+        # and on every re-read since, so the cause is GitHub's and unproven. A
+        # stale first reading is therefore checked 20 s later by a query of a
+        # different shape: every run CREATED inside the limit, with no event
+        # filter, the dispatched ones picked out here. Only when both say stale
+        # does the step fail; when they disagree it passes with a warning
+        # annotation, so the glitch stays countable without an email. The first
+        # reading is left as it was on purpose: a first reading that could not
+        # fail this way would leave nothing to count.
         run: |
           newest=$(gh run list -R "$GITHUB_REPOSITORY" --workflow uptime.yml \
             --event workflow_dispatch --limit 1 --json createdAt --jq '.[0].createdAt // empty')
+          age_min=""
+          if [ -n "$newest" ]; then
+            age_min=$(( ($(date -u +%s) - $(date -u -d "$newest" +%s)) / 60 ))
+            echo "newest dispatched run: $newest ($age_min min ago, limit $MAX_AGE_MIN)"
+            if [ "$age_min" -le "$MAX_AGE_MIN" ]; then
+              exit 0
+            fi
+          else
+            echo "newest dispatched run: none returned"
+          fi
+          sleep 20
+          since=$(date -u -d "-$MAX_AGE_MIN min" +%Y-%m-%dT%H:%M:%SZ)
+          recent=$(gh run list -R "$GITHUB_REPOSITORY" --workflow uptime.yml \
+            --created ">=$since" --limit 50 --json createdAt,event \
+            --jq 'map(select(.event == "workflow_dispatch") | .createdAt) | max // empty')
+          if [ -n "$recent" ]; then
+            recent_min=$(( ($(date -u +%s) - $(date -u -d "$recent" +%s)) / 60 ))
+            echo "second reading, runs created since $since: newest $recent ($recent_min min ago)"
+            if [ "$recent_min" -le "$MAX_AGE_MIN" ]; then
+              echo "::warning::the two readings disagree: the newest-first list said ${newest:-none}, but a dispatched run was created $recent_min min ago, so the first reading is what failed, not the trigger (tilltrend D-266)"
+              exit 0
+            fi
+          else
+            echo "second reading, runs created since $since: none"
+          fi
           if [ -z "$newest" ]; then
             echo "::error::no dispatched uptime run exists: the Cloudflare trigger has never run"
             exit 1
           fi
-          age_min=$(( ($(date -u +%s) - $(date -u -d "$newest" +%s)) / 60 ))
-          echo "newest dispatched run: $newest ($age_min min ago, limit $MAX_AGE_MIN)"
-          if [ "$age_min" -gt "$MAX_AGE_MIN" ]; then
-            echo "::error::no dispatched run for $age_min min: the Cloudflare trigger has stopped (expired token, deleted Worker?), so outage detection is back to GitHub's schedule"
-            exit 1
-          fi
+          echo "::error::no dispatched run for $age_min min, and none created since $since: the Cloudflare trigger has stopped (expired token, deleted Worker?), so outage detection is back to GitHub's schedule"
+          exit 1
