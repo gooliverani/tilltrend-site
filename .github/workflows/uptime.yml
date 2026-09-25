@@ -11,6 +11,9 @@
 # - Failure of any run emails the repo owner (default GitHub Actions notifications)
 #   = the S3 downtime alert. Test the alert path with:
 #     gh workflow run uptime -f simulate=fail
+# - RUNNER IMAGE (tilltrend D-271): ubuntu-latest moves to Ubuntu 26.04 between
+#   2026-10-19 and 2026-11-19. Try an image on one dispatch, nothing else moving:
+#     gh workflow run uptime -f runner=ubuntu-26.04 -f freshness=now
 # - Heads-up: GitHub disables cron workflows after ~60 days without repo activity;
 #   routine site publishes keep this alive.
 # - CADENCE (tilltrend D-257): the */15 schedule below is NOT what runs this every
@@ -34,13 +37,22 @@ on:
         description: "Set to 'now' to run the daily freshness and pending-reboot assertions outside their 14:00Z window"
         required: false
         default: ""
+      runner:
+        description: "Runner image for this one dispatch, to try a new image before ubuntu-latest moves to it (tilltrend D-271). The Worker sends no inputs and the schedule has none, so both stay on ubuntu-latest"
+        required: false
+        type: choice
+        options:
+          - ubuntu-latest
+          - ubuntu-26.04
+          - ubuntu-24.04
+        default: ubuntu-latest
 
 permissions:
   actions: read
 
 jobs:
   health:
-    runs-on: ubuntu-latest
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     timeout-minutes: 3
     steps:
       - name: Simulated failure (alert test)
@@ -115,9 +127,20 @@ jobs:
             # unseen. Read first, failed last, so a stale store and a pending
             # reboot both show on the same day. Package names stay in
             # host.packages on /health.
+            # "NO BLOCK" AND "NO JQ" ARE DIFFERENT ANSWERS (tilltrend D-271). `jq -e`
+            # exits 1 when has() is false, the old-server case these notices are for.
+            # Any other non-zero exit (jq missing, broken, or unable to read the body)
+            # used to take the same notice branch, so the run skipped the reboot and
+            # freshness checks and passed green. Found checking the Ubuntu 26 runner
+            # move, whose image changes jq from 1.7.1 to 1.8.1.
             host_fail=""
-            if ! printf '%s' "$body" | jq -e 'has("host")' >/dev/null 2>&1; then
+            host_jq=0
+            printf '%s' "$body" | jq -e 'has("host")' >/dev/null 2>&1 || host_jq=$?
+            if [ "$host_jq" -eq 1 ]; then
               echo "::notice::/health carries no host block - reboot flag not checked (code older than D-268?)"
+            elif [ "$host_jq" -ne 0 ]; then
+              echo "::error::jq exited $host_jq asking whether /health has a host block (jq missing or broken?), so the reboot flag was not checked"
+              host_fail=1
             else
               # tostring, never `// "unknown"`: jq's alternative operator treats
               # false as missing, so "nothing pending" would read as unknown.
@@ -133,8 +156,13 @@ jobs:
                   host_fail=1 ;;
               esac
             fi
-            if ! printf '%s' "$body" | jq -e 'has("refresh")' >/dev/null 2>&1; then
+            refresh_jq=0
+            printf '%s' "$body" | jq -e 'has("refresh")' >/dev/null 2>&1 || refresh_jq=$?
+            if [ "$refresh_jq" -eq 1 ]; then
               echo "::notice::/health carries no refresh block - freshness not checked (code older than D-263?)"
+            elif [ "$refresh_jq" -ne 0 ]; then
+              echo "::error::jq exited $refresh_jq asking whether /health has a refresh block (jq missing or broken?), so warehouse freshness was not checked"
+              exit 1
             else
               # WHAT "0 STALE" CANNOT SAY ON ITS OWN (tilltrend D-265). `scheduler` is
               # only the env switch, so "on" is not a live thread. `stale` is empty
@@ -191,12 +219,20 @@ jobs:
         # The same query was right on the 54 other scheduled runs since 2026-09-16
         # and on every re-read since, so the cause is GitHub's and unproven. A
         # stale first reading is therefore checked 20 s later by a query of a
-        # different shape: every run CREATED inside the limit, with no event
-        # filter, the dispatched ones picked out here. Only when both say stale
-        # does the step fail; when they disagree it passes with a warning
-        # annotation, so the glitch stays countable without an email. The first
-        # reading is left as it was on purpose: a first reading that could not
-        # fail this way would leave nothing to count.
+        # different shape: the newest 100 runs with NO server-side filter at all,
+        # the dispatched ones picked out here. Only when both say stale does the
+        # step fail; when they disagree it passes with a warning annotation, so
+        # the glitch stays countable without an email. The first reading is left
+        # as it was on purpose: a first reading that could not fail this way
+        # would leave nothing to count.
+        # WHY NO FILTER ON THE SECOND READING (tilltrend D-271). It first kept a
+        # `--created` window. On 2026-09-25 an `--event schedule` list read from a
+        # desktop returned 40 real runs whose newest was 13 days old, and it
+        # omitted 60 of the 100 runs in its own span: a filtered list can come
+        # from an index missing rows, not merely an old one. Nothing showed the
+        # created filter was served differently, so it could fail with the first
+        # reading and email a false red. At one dispatch per 15 min, 100 runs
+        # reach back about a day, far past the limit.
         run: |
           newest=$(gh run list -R "$GITHUB_REPOSITORY" --workflow uptime.yml \
             --event workflow_dispatch --limit 1 --json createdAt --jq '.[0].createdAt // empty')
@@ -211,23 +247,22 @@ jobs:
             echo "newest dispatched run: none returned"
           fi
           sleep 20
-          since=$(date -u -d "-$MAX_AGE_MIN min" +%Y-%m-%dT%H:%M:%SZ)
           recent=$(gh run list -R "$GITHUB_REPOSITORY" --workflow uptime.yml \
-            --created ">=$since" --limit 50 --json createdAt,event \
+            --limit 100 --json createdAt,event \
             --jq 'map(select(.event == "workflow_dispatch") | .createdAt) | max // empty')
           if [ -n "$recent" ]; then
             recent_min=$(( ($(date -u +%s) - $(date -u -d "$recent" +%s)) / 60 ))
-            echo "second reading, runs created since $since: newest $recent ($recent_min min ago)"
+            echo "second reading, the newest 100 runs unfiltered: newest dispatch $recent ($recent_min min ago)"
             if [ "$recent_min" -le "$MAX_AGE_MIN" ]; then
               echo "::warning::the two readings disagree: the newest-first list said ${newest:-none}, but a dispatched run was created $recent_min min ago, so the first reading is what failed, not the trigger (tilltrend D-266)"
               exit 0
             fi
           else
-            echo "second reading, runs created since $since: none"
+            echo "second reading, the newest 100 runs unfiltered: no dispatch"
           fi
-          if [ -z "$newest" ]; then
-            echo "::error::no dispatched uptime run exists: the Cloudflare trigger has never run"
+          if [ -z "$newest" ] && [ -z "$recent" ]; then
+            echo "::error::neither reading found a dispatched uptime run: the Cloudflare trigger has never run, or has been stopped for longer than the newest 100 runs reach"
             exit 1
           fi
-          echo "::error::no dispatched run for $age_min min, and none created since $since: the Cloudflare trigger has stopped (expired token, deleted Worker?), so outage detection is back to GitHub's schedule"
+          echo "::error::no dispatched run inside $MAX_AGE_MIN min by either reading (first: ${newest:-none}, second: ${recent:-none in the newest 100 runs}): the Cloudflare trigger has stopped (expired token, deleted Worker?), so outage detection is back to GitHub's schedule"
           exit 1
