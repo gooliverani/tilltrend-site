@@ -121,12 +121,14 @@ jobs:
             # PENDING REBOOT (tilltrend D-268), the one HOST fact /health carries.
             # A kernel update takes effect only on a reboot and nothing applies it
             # unattended, so on 2026-09-24 four kernels had queued since 2026-09-10
-            # or earlier while every check here stayed green. It FAILS the run, one
-            # email a day in this window, rather than warning, on the founder's
-            # call: a warning is a line nobody reads, which is how the flag went
-            # unseen. Read first, failed last, so a stale store and a pending
-            # reboot both show on the same day. Package names stay in
-            # host.packages on /health.
+            # or earlier while every check here stayed green. It FAILS the run,
+            # rather than warning, on the founder's call: a warning is a line
+            # nobody reads, which is how the flag went unseen. That is one email
+            # per run that starts in this window, so one or two a day, not one:
+            # on 2026-09-26 a late scheduled run (14:14:53Z) landed beside the
+            # Worker's 14:07Z dispatch and both emailed (tilltrend D-272). Read
+            # first, failed last, so a stale store and a pending reboot both show
+            # on the same day. Package names stay in host.packages on /health.
             # "NO BLOCK" AND "NO JQ" ARE DIFFERENT ANSWERS (tilltrend D-271). `jq -e`
             # exits 1 when has() is false, the old-server case these notices are for.
             # Any other non-zero exit (jq missing, broken, or unable to read the body)
