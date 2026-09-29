@@ -5,7 +5,8 @@
 # - Stage 3, once a day in the 14:00Z hour (tilltrend D-264): the SAME body must
 #   report every warehouse fresh for its own night and the scheduler on, and
 #   (D-265) at least one warehouse observed by a thread that checked within 3 h,
-#   and (D-268) the host must not be waiting on a reboot.
+#   and (D-268) the host must not be waiting on a reboot, and (D-279) reads must
+#   connect as the role that cannot write.
 #   Counts only; shop and package names stay out of this public log. Test it any time with:
 #     gh workflow run uptime -f freshness=now
 # - Failure of any run emails the repo owner (default GitHub Actions notifications)
@@ -158,6 +159,35 @@ jobs:
                   host_fail=1 ;;
               esac
             fi
+            # READ ROLE (tilltrend D-279). Since 2026-09-29 every warehouse read
+            # connects as tilltrend_reader, which holds no write privilege, so
+            # read-only lives in the database's grants and not only in a connection
+            # option. A lost env line puts the owner back behind every read with
+            # "status" still ok, and nothing else outside the box would notice.
+            # /health reports the role the database says the read got. Once a day,
+            # like the reboot flag: going back to the owner is a config change, not
+            # an outage, so failing every run would mean about 96 emails for one.
+            # Read here, failed last with the host, so every other daily finding
+            # still prints on the same day.
+            role_fail=""
+            role_jq=0
+            printf '%s' "$body" | jq -e 'has("read_role")' >/dev/null 2>&1 || role_jq=$?
+            if [ "$role_jq" -eq 1 ]; then
+              echo "::notice::/health carries no read_role - the read role was not checked (code older than D-279?)"
+            elif [ "$role_jq" -ne 0 ]; then
+              echo "::error::jq exited $role_jq asking whether /health has read_role (jq missing or broken?), so the read role was not checked"
+              role_fail=1
+            else
+              role=$(printf '%s' "$body" | jq -r '.read_role | tostring')
+              if [ "$role" = "tilltrend_reader" ]; then
+                echo "read role: tilltrend_reader (cannot write)"
+              else
+                # The name is withheld like shop and package names: it is the
+                # owner's role more often than not, and read_role on /health has it.
+                echo "::error::warehouse reads connect as a role other than tilltrend_reader (name withheld from this public log; read_role on /health has it), so read-only rests on a connection option alone; restore TILLTREND_PG_READ_USER and TILLTREND_PG_READ_PASSWORD in /etc/tilltrend/env (tilltrend app/docs/deploy-cloud.md, Read role)"
+                role_fail=1
+              fi
+            fi
             refresh_jq=0
             printf '%s' "$body" | jq -e 'has("refresh")' >/dev/null 2>&1 || refresh_jq=$?
             if [ "$refresh_jq" -eq 1 ]; then
@@ -204,7 +234,7 @@ jobs:
                 exit 1
               fi
             fi
-            if [ -n "$host_fail" ]; then
+            if [ -n "$host_fail" ] || [ -n "$role_fail" ]; then
               exit 1
             fi
           fi
