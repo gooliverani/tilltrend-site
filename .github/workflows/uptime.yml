@@ -245,56 +245,55 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           MAX_AGE_MIN: "60"
         # TWO READINGS MUST AGREE BEFORE THIS EMAILS (tilltrend D-266). On
-        # 2026-09-24T12:15:42Z this query answered 2026-07-04T09:03:23Z, the newest
-        # dispatched run that existed BEFORE the Worker started on 2026-09-16, as if
-        # it read a view eight days old; the Worker had dispatched 8 min earlier.
-        # The same query was right on the 54 other scheduled runs since 2026-09-16
-        # and on every re-read since, so the cause is GitHub's and unproven. A
-        # stale first reading is therefore checked 20 s later by a query of a
-        # different shape: the newest 100 runs with NO server-side filter at all,
-        # the dispatched ones picked out here. Only when both say stale does the
-        # step fail; when they disagree it passes with a warning annotation, so
-        # the glitch stays countable without an email. The first reading is left
-        # as it was on purpose: a first reading that could not fail this way
-        # would leave nothing to count.
-        # WHY NO FILTER ON THE SECOND READING (tilltrend D-271). It first kept a
-        # `--created` window. On 2026-09-25 an `--event schedule` list read from a
-        # desktop returned 40 real runs whose newest was 13 days old, and it
-        # omitted 60 of the 100 runs in its own span: a filtered list can come
-        # from an index missing rows, not merely an old one. Nothing showed the
-        # created filter was served differently, so it could fail with the first
-        # reading and email a false red. At one dispatch per 15 min, 100 runs
-        # reach back about a day, far past the limit.
+        # 2026-09-24T12:15:42Z an event-filtered query of this workflow's runs
+        # answered 2026-07-04T09:03:23Z, a dispatch from before the Worker
+        # started, while the Worker had dispatched 8 min earlier, and the run
+        # emailed a false red. A filtered run list can come from an index missing
+        # rows, the newest included: tilltrend D-271 read one from a desktop that
+        # omitted 60 of the 100 runs in its own span. So NO reading here passes a
+        # server-side filter. Each takes the newest 100 runs and picks the
+        # dispatched ones out in jq; at one dispatch per 15 min, 100 runs reach
+        # back about a day, far past the limit.
+        # THE EVENT-FILTERED READING IS GONE (tilltrend D-282). D-266 kept it as
+        # the first reading so the glitch stayed countable, and named the change
+        # to make if the warnings recurred. They did: by 2026-10-02 it was stale
+        # on 7 of the last 14 scheduled runs, so on those runs the email rested
+        # on the second reading alone. Both readings are now unfiltered and of
+        # different shapes: first this workflow's runs, then, 20 s later, the
+        # whole repository's runs from the raw API, the uptime dispatches picked
+        # out by workflow path. Only when both say stale does the step fail; when
+        # they disagree it passes with a warning annotation, which now means an
+        # unfiltered list was wrong, a thing nothing here has yet seen.
         run: |
           newest=$(gh run list -R "$GITHUB_REPOSITORY" --workflow uptime.yml \
-            --event workflow_dispatch --limit 1 --json createdAt --jq '.[0].createdAt // empty')
+            --limit 100 --json createdAt,event \
+            --jq 'map(select(.event == "workflow_dispatch") | .createdAt) | max // empty')
           age_min=""
           if [ -n "$newest" ]; then
             age_min=$(( ($(date -u +%s) - $(date -u -d "$newest" +%s)) / 60 ))
-            echo "newest dispatched run: $newest ($age_min min ago, limit $MAX_AGE_MIN)"
+            echo "first reading, this workflow's newest 100 runs: newest dispatch $newest ($age_min min ago, limit $MAX_AGE_MIN)"
             if [ "$age_min" -le "$MAX_AGE_MIN" ]; then
               exit 0
             fi
           else
-            echo "newest dispatched run: none returned"
+            echo "first reading, this workflow's newest 100 runs: no dispatch"
           fi
           sleep 20
-          recent=$(gh run list -R "$GITHUB_REPOSITORY" --workflow uptime.yml \
-            --limit 100 --json createdAt,event \
-            --jq 'map(select(.event == "workflow_dispatch") | .createdAt) | max // empty')
+          recent=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs?per_page=100&exclude_pull_requests=true" \
+            --jq '[.workflow_runs[] | select(.path == ".github/workflows/uptime.yml" and .event == "workflow_dispatch") | .created_at] | max // empty')
           if [ -n "$recent" ]; then
             recent_min=$(( ($(date -u +%s) - $(date -u -d "$recent" +%s)) / 60 ))
-            echo "second reading, the newest 100 runs unfiltered: newest dispatch $recent ($recent_min min ago)"
+            echo "second reading, the repository's newest 100 runs: newest uptime dispatch $recent ($recent_min min ago)"
             if [ "$recent_min" -le "$MAX_AGE_MIN" ]; then
-              echo "::warning::the two readings disagree: the newest-first list said ${newest:-none}, but a dispatched run was created $recent_min min ago, so the first reading is what failed, not the trigger (tilltrend D-266)"
+              echo "::warning::the two readings disagree: the workflow list said ${newest:-no dispatch}, but the repository list holds a dispatch created $recent_min min ago, so the first reading is what failed, not the trigger (tilltrend D-266, D-282)"
               exit 0
             fi
           else
-            echo "second reading, the newest 100 runs unfiltered: no dispatch"
+            echo "second reading, the repository's newest 100 runs: no uptime dispatch"
           fi
           if [ -z "$newest" ] && [ -z "$recent" ]; then
             echo "::error::neither reading found a dispatched uptime run: the Cloudflare trigger has never run, or has been stopped for longer than the newest 100 runs reach"
             exit 1
           fi
-          echo "::error::no dispatched run inside $MAX_AGE_MIN min by either reading (first: ${newest:-none}, second: ${recent:-none in the newest 100 runs}): the Cloudflare trigger has stopped (expired token, deleted Worker?), so outage detection is back to GitHub's schedule"
+          echo "::error::no dispatched run inside $MAX_AGE_MIN min by either reading (first: ${newest:-none in the workflow list}, second: ${recent:-none in the repository list}): the Cloudflare trigger has stopped (expired token, deleted Worker?), so outage detection is back to GitHub's schedule"
           exit 1
