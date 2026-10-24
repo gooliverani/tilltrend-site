@@ -187,6 +187,7 @@
   if (pinned) {
     var p = clamp01(parseFloat(pin) || 0);
     apply(p, PIN_TC);
+    root.classList.add("cine-live");
     window.__cineP = p;
     window.__cineReady = true;
     return;
@@ -195,6 +196,9 @@
   var shown = progress();                     /* start settled: no catch-up sprint */
   var target = shown;
   apply(shown, 0);
+  /* the scene is driven now, so the page may rise over the band's tail as the
+     mark docks (style.css .cine-live); a static lockup is never overlapped */
+  root.classList.add("cine-live");
 
   /* touch devices catch up more gently: a fling teleports scrollY, and the
      lower ease spreads that jump over more frames so the burn-out stays
@@ -217,6 +221,7 @@
         stage.getBoundingClientRect().top < -80) {
       collapsed = true;
       section.style.height = "auto";
+      root.classList.remove("cine-live");
       apply(0, PIN_TC);
       hint.style.opacity = "0";
       brand.style.opacity = "";

@@ -9,17 +9,17 @@
 metric,product_performance
 tool,run_metric
 question,product_performance
-receipt_id,rcp_9a715820f88a4056a99523678815217f
-receipt_hash,sha256:44db41b61eca07f27624f59ea5915fb634803fee927b30fca08d27bbc0db805e
+receipt_id,rcp_38441162ce704c1996c489aafb87f30a
+receipt_hash,sha256:621b31975b43f5c1b360df6da05850323bc20c19d10cbd2c31820018d2fbf085
 result_hash,sha256:40e544574605ae969e46fea1da0dde8b7c548ef4660c9f9a3fef72e2449edfdb
-warehouse_build,2965e340-3b13-44ce-b287-63da0695a924
-built_at,2026-10-24T11:29:07.303664+02:00
-created_at,2026-10-24T09:29:11.765+00:00
+warehouse_build,98131008-eae2-4e2e-986f-ed72e62cc1cd
+built_at,2026-10-24T18:17:14.039463+02:00
+created_at,2026-10-24T16:17:18.786+00:00
 dataset_window,2010-12-29 .. 2014-01-28
 row_count,5
-elapsed_ms,470.6
+elapsed_ms,490.2
 sql,"SELECT product_key, product_number, product_name, category, subcategory, product_line, revenue, units_sold, orders, customers FROM gold.v_product_performance f ORDER BY revenue DESC, product_key ASC LIMIT %s"
 params,[5]
 caveat,orders is not additive across products (one order can hold several products).
 caveat,top_n=5: more segments/rows may exist beyond the returned set; any segment_sum covers the returned rows only.
-replay (model-free),python app\scripts\replay.py rcp_9a715820f88a4056a99523678815217f
+replay (model-free),python app\scripts\replay.py rcp_38441162ce704c1996c489aafb87f30a

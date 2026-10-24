@@ -891,6 +891,15 @@ main.home { max-width: none; padding: 0 0 0; }
   text-transform: uppercase; color: #8e9993;
 }
 .cine-hint::after { content: "Scroll"; }
+/* the page rises over the band's tail while the mark docks, instead of one
+   empty night screen after it: main overlaps the last 42% of the scrub span,
+   (track - 100svh) * 0.42, so its top reaches the fold as the dock starts
+   (p 0.58, cine.js). Gated on .cine-live, which cine.js adds once it drives
+   the scene, so a static fallback lockup is never overlapped. Positioned main
+   paints above the band (both z auto, main later in the DOM) and stays under
+   the header (50) and the stage (55); the docking mark clears its edge. */
+.cine-live .cine { margin-bottom: calc((100svh - 200vh) * 0.42); }
+.cine-live main.home { position: relative; background: var(--bg); }
 @media (max-width: 640px) {
   /* LONGER track than desktop, not shorter: a thumb-fling covers several
      viewports where a wheel tick covers ~200px, so per-gesture progress must
@@ -899,6 +908,7 @@ main.home { max-width: none; padding: 0 0 0; }
      pairing when both were shortened in the 2026-10-24 redesign). cine.js
      also eases harder on touch. */
   .cine-on .cine { height: 320vh; }
+  .cine-live .cine { margin-bottom: calc((100svh - 320vh) * 0.42); }
   .cine-hint::after { content: "Swipe"; }   /* phones swipe, they don't scroll */
   .cine-stage { padding: 0 1.1rem; }
   .cine-lockup { flex-direction: column; gap: 5svh; }
