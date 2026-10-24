@@ -90,71 +90,135 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
   </div>
 </section>
 
-<main>
+<main class="home">
 
-<div class="hero">
-  <span class="prelaunch">Pre-launch &middot; built in public</span>
-  <h1>The AI analyst for your store.<br>Every answer shows its work.</h1>
+<section class="home-hero wrap">
+  <h1><span>The AI analyst for your store.</span> <span>Every answer shows its work.</span></h1>
   <p class="tagline">Ask questions about your store in plain language. Every number
   in the answer carries a receipt: the governed metric definition, the exact SQL,
   and a hash you can replay without the AI in the loop.</p>
-  <a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a>
-</div>
-
-<div class="threeup">
-  <section>
-    <h3>Ask in plain language</h3>
-    <p>"What was total revenue?" "Compare June and July." "Which countries drive
-    revenue?" The model picks the right governed metric and writes the prose.
-    It never writes the SQL and never touches your data directly.</p>
-  </section>
-  <section>
-    <h3>Every answer carries a receipt</h3>
-    <p>Answers come in two visible sections: <strong>receipted facts</strong>
-    (numbers produced by governed SQL, each with a receipt id and hash) and
-    <strong>interpretation</strong> (model prose, clearly labeled as not
-    receipted). Any receipt can be replayed model-free; a doctored one fails.</p>
-  </section>
-  <section>
-    <h3>Your warehouse is yours</h3>
-    <p>Tilltrend builds a real bronze/silver/gold warehouse from your store data:
-    on PostgreSQL you control, exportable, inspectable. Built so that leaving is
-    easy, which is exactly why you won't have to.</p>
-  </section>
-</div>
-
-<h2>What an answer actually looks like</h2>
-
-<p>This is not a mockup. Everything below comes from one real run of the
-product answering "What was total revenue?", executed 2026-07-26 against the
-demo warehouse. Reproduce it yourself with:</p>
-
-<pre><code>python app\scripts\ask.py "What was total revenue?"</code></pre>
-
-<p>In the app, the answer opens as a readable card built from the stored
-receipt. Two renderings of one stored value: the card formats it as money at
-the display layer, the receipt keeps the exact number.</p>
-
-<div class="answer-cards" aria-label="What the app shows first">
-  <div class="acard">
-    <div class="acard-head"><span class="acard-metric">Total revenue</span>
-    <span class="acard-scope">all time</span></div>
-    <div class="acard-big">$29,356,250.00</div>
-    <ul class="acard-caveats"><li>Gross revenue only: the source has no cancellation/refund data.</li></ul>
+  <div class="actions">
+    <a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a>
+    <a class="link-more" href="sample-report.html">See a full sample report &rarr;</a>
   </div>
-  <div class="acard acard-interp">
-    <div class="acard-head"><span class="acard-metric">What this means</span>
-    <span class="acard-scope">model prose, not receipted</span></div>
-    <p class="acard-prose">Total revenue across all time was 29,356,250. This figure represents gross revenue only; the underlying source lacks cancellation and refund data, so the net revenue after adjustments may differ from this amount.</p>
+  <p class="status">Pre-launch &middot; built in public</p>
+</section>
+
+<section class="section wrap" aria-labelledby="answer-h">
+  <div class="section-head">
+    <h2 id="answer-h">What an answer actually looks like</h2>
+    <p>The same question, answered twice. The chat answer is an illustration of
+    a number with nothing behind it. The Tilltrend answer is not a mockup: it
+    comes from one real run of the product answering "What was total revenue?",
+    executed 2026-07-26 against the demo warehouse.</p>
   </div>
-</div>
 
-<p>The exact audited text stays one click away in the app, unchanged to the
-character. Here it is in full: the verbatim terminal output of that same
-run.</p>
+  <div class="versus">
+    <figure class="vs-side vs-plain">
+      <figcaption class="vs-label">A chat answer (illustration)</figcaption>
+      <div class="chat">
+        <p class="bubble q">What was total revenue?</p>
+        <p class="bubble a">Your total revenue was about $29.4 million. Sales look strong overall.</p>
+      </div>
+      <ul class="vs-gaps">
+        <li>Which orders does it count?</li>
+        <li>Are refunds taken out?</li>
+        <li>Would it say the same tomorrow?</li>
+      </ul>
+      <p class="vs-verdict">The answer cannot tell you.</p>
+    </figure>
 
-<div class="receipt">
-  <div class="label">Real output &middot; demo dataset (public training data, 2010&ndash;2014 bike sales, not real merchants)</div>
+    <figure class="vs-side vs-real">
+      <figcaption class="vs-label">Tilltrend (real output, demo dataset)</figcaption>
+      <div class="answer-cards" aria-label="What the app shows first">
+        <div class="acard">
+          <div class="acard-head"><span class="acard-metric">Total revenue</span>
+          <span class="acard-scope">all time</span></div>
+          <div class="acard-big">$29,356,250.00</div>
+          <ul class="acard-caveats"><li>Gross revenue only: the source has no cancellation/refund data.</li></ul>
+        </div>
+        <div class="acard acard-interp">
+          <div class="acard-head"><span class="acard-metric">What this means</span>
+          <span class="acard-scope">model prose, not receipted</span></div>
+          <p class="acard-prose">Total revenue across all time was 29,356,250. This figure represents gross revenue only; the underlying source lacks cancellation and refund data, so the net revenue after adjustments may differ from this amount.</p>
+        </div>
+      </div>
+      <p class="vs-note">Two renderings of one stored value: the card formats it
+      as money at the display layer, the receipt keeps the exact number.</p>
+      <div class="slip-wrap">
+        <div class="slip" role="group" aria-label="The receipt behind this answer">
+          <div class="slip-head"><strong>RECEIPT</strong><span class="slip-id">rcp_1e047258878c43cba3b21d673a7ccbc5</span></div>
+          <dl class="slip-lines">
+            <div><dt>metric</dt><dd>total_revenue</dd></div>
+            <div><dt>scope</dt><dd>all time</dd></div>
+            <div><dt>value</dt><dd>29,356,250</dd></div>
+            <div><dt>hash</dt><dd>sha256:2bb5a5c95744d84e</dd></div>
+          </dl>
+          <div class="slip-sql">
+            <span class="slip-k">The governed SQL behind 29,356,250</span>
+<pre><code>SELECT SUM(f.sales_amount) AS total_revenue
+FROM gold.fact_sales f</code></pre>
+          </div>
+          <dl class="slip-lines slip-total">
+            <div><dt>replay, no model</dt><dd>MATCH</dd></div>
+            <div><dt>post-check</dt><dd>PASS</dd></div>
+          </dl>
+        </div>
+      </div>
+    </figure>
+  </div>
+</section>
+
+<section class="section wrap" aria-labelledby="how-h">
+  <div class="section-head">
+    <h2 id="how-h">How it works</h2>
+  </div>
+  <div class="principles">
+    <div>
+      <h3>Ask in plain language</h3>
+      <p>"What was total revenue?" "Compare June and July." "Which countries drive
+      revenue?" The model picks the right governed metric and writes the prose.
+      It never writes the SQL and never touches your data directly.</p>
+    </div>
+    <div>
+      <h3>Every answer carries a receipt</h3>
+      <p>Answers come in two visible sections: <strong>receipted facts</strong>
+      (numbers produced by governed SQL, each with a receipt id and hash) and
+      <strong>interpretation</strong> (model prose, clearly labeled as not
+      receipted). Any receipt can be replayed model-free; a doctored one fails.</p>
+    </div>
+    <div>
+      <h3>Your warehouse is yours</h3>
+      <p>Tilltrend builds a real bronze/silver/gold warehouse from your store data:
+      on PostgreSQL you control, exportable, inspectable. Built so that leaving is
+      easy, which is exactly why you won't have to.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap" aria-labelledby="check-h">
+  <div class="proof">
+    <div class="proof-text">
+      <h2 id="check-h">Check it yourself</h2>
+      <p>Reproduce the answer above with:</p>
+      <pre><code>python app\scripts\ask.py "What was total revenue?"</code></pre>
+      <p>The exact audited text stays one click away in the app, unchanged to the
+      character. Here it is in full: the verbatim terminal output of that same
+      run.</p>
+      <p>Every number traces to one query. The SQL on the receipt is the governed
+      statement the deterministic layer executes for <code>total_revenue</code> and
+      stores in the receipt's <code>execution</code> block. The model only chose
+      the metric; it never writes SQL. Tilltrend's Ask page shows this beneath
+      every answer.</p>
+      <p>The 29,356,250 is a property of the demo dataset, not a revenue claim about
+      this product or anyone's business. Replaying that receipt re-executes the same
+      governed SQL with no model involved and grades the result. Observed verdict:
+      <span class="observed">MATCH</span>. Doctor the receipt file and it fails.</p>
+      <p><a class="link-more" href="evidence.html">See every claim with its reproduction command &rarr;</a></p>
+    </div>
+
+    <div class="term">
+      <div class="label">Real output &middot; demo dataset (public training data, 2010&ndash;2014 bike sales, not real merchants)</div>
 <pre>question: What was total revenue?
 turn:     turn_7333a781e9ba   mode: model   model: claude-haiku-4-5-20251001
 
@@ -172,48 +236,33 @@ receipts:
   rcp_1e047258878c43cba3b21d673a7ccbc5 | sha256:2bb5a5c95744d84e
 replay:   python app\scripts\replay.py rcp_1e047258878c43cba3b21d673a7ccbc5
 postcheck: PASS (attempts=1)</pre>
-</div>
+    </div>
+  </div>
+</section>
 
-<p>Every number traces to one query. Here is the <strong>governed SQL Tilltrend runs
-for <code>total_revenue</code></strong>: the exact statement the deterministic
-layer executes for that metric and stores in the receipt's <code>execution</code>
-block. The model only chose the metric; it never writes SQL. Tilltrend's Ask page now
-shows this beneath every answer:</p>
+<section class="honest-band" aria-labelledby="honest-h">
+  <div class="wrap">
+    <h2 id="honest-h">Where this is honest by construction</h2>
+    <p class="statement"><strong>Tilltrend is pre-launch.</strong> No merchant counts, no testimonials,
+    no revenue-lift percentages: we have none, so none appear on this site. What
+    we do have is a working product whose every claim is reproducible: the
+    <a href="evidence.html">evidence page</a> lists each one with the exact command
+    and the observed result, and the <a href="changelog.html">changelog</a> records
+    only shipped, verified work.</p>
+  </div>
+</section>
 
-<div class="receipt">
-  <div class="label">The governed SQL behind 29,356,250 &middot; what the receipt stores, shown inline on the Ask page</div>
-<pre><code>SELECT SUM(f.sales_amount) AS total_revenue
-FROM gold.fact_sales f</code></pre>
-</div>
-
-<p>The 29,356,250 is a property of the demo dataset, not a revenue claim about
-this product or anyone's business. Replaying that receipt re-executes the same
-governed SQL with no model involved and grades the result. Observed verdict:
-<span class="observed">MATCH</span>. Doctor the receipt file and it fails.
-<a href="evidence.html">See every claim with its reproduction command &rarr;</a></p>
-
-<p><a class="cta big" href="sample-report.html">See a full sample report &rarr;</a></p>
-
-<h2>Where this is honest by construction</h2>
-
-<div class="honest">
-  <p><strong>Tilltrend is pre-launch.</strong> No merchant counts, no testimonials,
-  no revenue-lift percentages: we have none, so none appear on this site. What
-  we do have is a working product whose every claim is reproducible: the
-  <a href="evidence.html">evidence page</a> lists each one with the exact command
-  and the observed result, and the <a href="changelog.html">changelog</a> records
-  only shipped, verified work.</p>
-</div>
-
-<h2>Early access</h2>
-
-<p>We're looking for a small number of merchants to shape the product. The
-Shopify app is real and running: install is by private link today, and the
-public App Store listing waits on our legal pack. If "an analyst that shows
-its work" sounds like what your store is missing, write to us. A human reads
-every mail.</p>
-
-<p><a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a></p>
+<section class="closer" aria-labelledby="access-h">
+  <div class="wrap">
+    <h2 id="access-h">Early access</h2>
+    <p>We're looking for a small number of merchants to shape the product. The
+    Shopify app is real and running: install is by private link today, and the
+    public App Store listing waits on our legal pack. If "an analyst that shows
+    its work" sounds like what your store is missing, write to us. A human reads
+    every mail.</p>
+    <a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a>
+  </div>
+</section>
 
 </main>
 

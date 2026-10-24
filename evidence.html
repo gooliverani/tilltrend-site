@@ -35,16 +35,37 @@
   </nav>
 </header>
 
-<main>
+<main class="doc">
 
+<div class="page-head">
 <h1>Evidence</h1>
 <p class="tagline">The rule this site is built on: <strong>no claim without a
 receipt.</strong> Every factual statement about the product appears below with
 the exact command that reproduces it and the result we observed. Anything we
 can't prove yet is framed as design intent elsewhere on this site, never as
 achievement.</p>
+</div>
 
-<h2>The dataset, honestly</h2>
+<nav class="toc" aria-label="On this page">
+  <p class="toc-title">On this page</p>
+  <ol>
+    <li><a href="#dataset">The dataset</a></li>
+    <li><a href="#claim-1"><span class="n">1</span>Answers replay without the model</a></li>
+    <li><a href="#claim-2"><span class="n">2</span>A doctored receipt fails</a></li>
+    <li><a href="#claim-3"><span class="n">3</span>The verification gate, 6/6</a></li>
+    <li><a href="#claim-4"><span class="n">4</span>Data quality, 33/33</a></li>
+    <li><a href="#claim-5"><span class="n">5</span>Reproducible rebuilds</a></li>
+    <li><a href="#claim-6"><span class="n">6</span>The engine port</a></li>
+    <li><a href="#claim-7"><span class="n">7</span>Independent validation, 10/10</a></li>
+    <li><a href="#claim-8"><span class="n">8</span>Governed refusal</a></li>
+    <li><a href="#claim-9"><span class="n">9</span>The admin UI</a></li>
+    <li><a href="#dont-claim">What we don't claim</a></li>
+  </ol>
+</nav>
+
+<div class="doc-body">
+
+<h2 id="dataset">The dataset, honestly</h2>
 
 <p>Tilltrend is pre-launch, so there is no merchant data. The demo warehouse is
 built from a <strong>public training dataset</strong>, CRM/ERP extracts of
@@ -63,7 +84,7 @@ when we last ran each command.</p>
 
 <h2>Claims and proofs</h2>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-1">
   <h3>Claim 1: Every number in an answer is receipted, and the receipt replays without the model</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -82,7 +103,7 @@ python app\scripts\replay.py rcp_c60c017f43c346328383448a66088735</code></pre></
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-2">
   <h3>Claim 2: A doctored receipt fails replay</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -104,7 +125,7 @@ python app\scripts\replay.py rcp_c60c017f43c346328383448a66088735</code></pre></
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-3">
   <h3>Claim 3: The adversarial verification gate is green, 6/6 suites</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -127,7 +148,7 @@ python app\scripts\replay.py rcp_c60c017f43c346328383448a66088735</code></pre></
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-4">
   <h3>Claim 4: The warehouse passes 33/33 data-quality checks</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -148,7 +169,7 @@ python app\scripts\replay.py rcp_c60c017f43c346328383448a66088735</code></pre></
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-5">
   <h3>Claim 5: Rebuilds are reproducible, same data, same fingerprint</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -175,15 +196,15 @@ python app\warehouse\build.py</code></pre></dd>
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-6">
   <h3>Claim 6: The DuckDB → PostgreSQL port is number-for-number equivalent</h3>
   <dl>
     <dt>Reproduce</dt>
     <dd><pre><code>python app\warehouse\build.py
 python app\scripts\run_quality_checks.py</code></pre>
     Full methodology and the audited DuckDB baseline figures:
-    <code>app\docs\evidence.md</code> and <code>app\CHANGELOG.md</code> (Week 1,
-    engine port entry). The frozen DuckDB baseline file is kept on disk
+    <code>app\docs\evidence.md</code> and <code>app\CHANGELOG.md</code> (the
+    2026-06-12 engine port entry). The frozen DuckDB baseline file is kept on disk
     untouched.</dd>
     <dt>What you should observe</dt>
     <dd>Every number exact across engines: total revenue 29,356,250 over 27,659
@@ -199,7 +220,7 @@ python app\scripts\run_quality_checks.py</code></pre>
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-7">
   <h3>Claim 7: Every headline metric was independently validated, 10/10 confirmed</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -221,7 +242,7 @@ python app\scripts\run_quality_checks.py</code></pre>
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-8">
   <h3>Claim 8: When the data doesn't exist, the agent refuses in governed text</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -242,7 +263,7 @@ python app\scripts\run_quality_checks.py</code></pre>
   </dl>
 </div>
 
-<div class="claim-row">
+<div class="claim-row" id="claim-9">
   <h3>Claim 9: Every number in the admin UI traces to a governed metric</h3>
   <dl>
     <dt>Reproduce</dt>
@@ -261,7 +282,7 @@ python app\scripts\run_quality_checks.py</code></pre>
   </dl>
 </div>
 
-<h2>What we don't claim</h2>
+<h2 id="dont-claim">What we don't claim</h2>
 
 <div class="honest">
   <p>No customers, no testimonials, no revenue-lift numbers, no "stores
@@ -274,6 +295,8 @@ python app\scripts\run_quality_checks.py</code></pre>
 <p class="muted">Found a claim on this site without a receipt? That's a bug.
 <a href="mailto:contact@tilltrend.app?subject=Tilltrend%20evidence%20bug">Report
 it</a> and we'll fix it or retract the claim.</p>
+
+</div>
 
 </main>
 

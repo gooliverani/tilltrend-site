@@ -1,14 +1,24 @@
-/* Tilltrend marketing site — shared stylesheet.
-   App-style dark theme: graphite background, emerald accent, DM Sans (the brand
-   typeface, self-hosted to match the logo wordmark and the admin dashboard). The
-   look deliberately echoes the product's own UI — a sticky app bar, card panels,
-   emerald CTAs — while keeping the printed-receipt feel of the demo blocks. No
-   frameworks, no network fonts; the font ships as one bundled .woff2. The only
-   JS is cine.js — the homepage's vanilla scroll-scrub hero, a pure progressive
-   enhancement (every page is complete without it).
-   Custom-property names use --tilltrend (D-044 de-Plum). */
+/* Tilltrend marketing site: shared stylesheet.
 
-/* Brand typeface — DM Sans, self-hosted (no CDN). One variable file, all weights. */
+   Two themes from one set of tokens, chosen by the visitor's own system setting
+   (prefers-color-scheme): a light reading theme and a softened graphite dark one.
+   The hero band and the footer stay dark in both, because the firefly scene is
+   drawn for a night ground and loses its glow on a light one.
+
+   Reading first: running prose is held to about 66 characters a line (DESIGN.md
+   sets 45 to 75), and a card is used only where it mirrors a real piece of the
+   app (the answer card, the receipt). DM Sans is the brand typeface, self-hosted
+   to match the logo wordmark and the admin dashboard; no frameworks, no network
+   fonts. The only JS is cine.js, the homepage's scroll-scrub hero, a pure
+   progressive enhancement (every page is complete without it).
+
+   Three surfaces read this file besides the site pages, so keep their hooks:
+   the legal drafts print through it (site/_legal-drafts, compared word for word
+   by app/scripts/legal_pack_check.py, so never put text in a `content:` rule
+   that can reach their header or footer), the sample report nests its own
+   `.report` sheet inside it, and cine.js measures the 30px header icon. */
+
+/* Brand typeface: DM Sans, self-hosted (no CDN). One variable file, all weights. */
 @font-face {
   font-family: "DM Sans";
   src: url("dm-sans-var.woff2") format("woff2");
@@ -18,58 +28,111 @@
 }
 
 :root {
-  /* brand */
-  --tilltrend: #5FB877;        /* emerald — primary accent on dark */
-  --tilltrend-dark: #4ea568;   /* emerald hover / pressed */
-  --clay: #5FB877;             /* CTA accent (emerald — the logo has no orange) */
-  --clay-dark: #4ea568;
-  --leaf: #6cc888;             /* positive / verified / checkmarks */
-  --leaf-dark: #5FB877;
+  color-scheme: light dark;
 
-  /* surfaces — graphite, matching the dashboard */
-  --paper: #0e1014;            /* page background (near-black graphite) */
-  --paper-2: #0a0b0e;          /* deeper — footer / contrast bands */
-  --card: #161a20;             /* panel surface */
-  --card-2: #1b2128;           /* raised surface / table head / code */
-  --glass: rgba(14, 16, 20, 0.82);   /* sticky bar backdrop */
+  /* fixed: the brand and the always-dark bands */
+  --emerald: #5FB877;
+  --night: #0f1312;            /* hero band; equals the dark theme's ground, so no seam */
+  --night-2: #0a0d0c;          /* footer band */
+  --night-ink: #bcc6c1;
+  --night-head: #f1f5f2;
+  --night-rule: #1e2624;
+  --night-accent: #7fd39a;
 
-  /* ink */
-  --ink: #e7eaee;              /* primary text */
-  --ink-soft: #9aa3ae;         /* muted text */
-  --rule: #252b33;             /* hairline border */
-  --rule-strong: #333b45;      /* stronger border */
-  --code-bg: #11151a;
-
-  --mono: ui-monospace, "Cascadia Mono", Consolas, "Courier New", monospace;
   --sans: "DM Sans", system-ui, "Segoe UI", Arial, sans-serif;
-  --serif: var(--sans);        /* headings now use the brand sans, not a serif */
-  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 8px 28px rgba(0,0,0,.28);
+  --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
+  --serif: var(--sans);
+  --r-btn: 7px;                /* the app's button radius (DESIGN.md, Bars) */
+  --r-card: 14px;
+  --measure: 66ch;
+  --wide: 76rem;
+  --gutter: clamp(1.125rem, 4vw, 2.5rem);
+  --head-h: 4rem;
+
+  /* light theme (the default; dark overrides below) */
+  --bg: #f5f7f6;
+  --bg-2: #ebf0ed;
+  --surface: #ffffff;
+  --surface-2: #eef2f0;
+  --ink: #18211c;
+  --ink-2: #48534d;
+  --ink-3: #5f6a64;
+  --head: #0e1712;
+  --rule: #dce3df;
+  --rule-2: #c3ccc7;
+  --accent: #23794a;
+  --accent-hover: #185f38;
+  --accent-soft: rgba(35, 121, 74, 0.09);
+  --btn: #23794a;
+  --btn-hover: #1b6a3f;
+  --btn-ink: #ffffff;
+  --code-ink: #1b5a37;
+  --glass: rgba(245, 247, 246, 0.86);
+  --shadow: 0 1px 2px rgba(18, 32, 25, 0.06), 0 4px 10px -6px rgba(18, 32, 25, 0.14);
+  --sel: rgba(95, 184, 119, 0.30);
+  --paper: #fdfdfb;
+  --paper-ink: #19201c;
+  --paper-mute: #5d6762;
+  --paper-rule: #d9ded9;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f1312;
+    --bg-2: #141a18;
+    --surface: #161c1a;
+    --surface-2: #1b2220;
+    --ink: #d9e1dc;
+    --ink-2: #a3aea8;
+    --ink-3: #8b9690;
+    --head: #f1f5f2;
+    --rule: #242c29;
+    --rule-2: #34403b;
+    --accent: #76cf92;
+    --accent-hover: #97ddad;
+    --accent-soft: rgba(95, 184, 119, 0.12);
+    --btn: #5FB877;
+    --btn-hover: #70c487;
+    --btn-ink: #07120b;
+    --code-ink: #bfe5cb;
+    --glass: rgba(15, 19, 18, 0.84);
+    --shadow: 0 1px 0 rgba(255, 255, 255, 0.03) inset;
+    --sel: rgba(95, 184, 119, 0.32);
+    --paper: #e9eeea;
+    --paper-ink: #151b18;
+    --paper-mute: #4f5954;
+    --paper-rule: #c8cfca;
+  }
 }
 
 * { box-sizing: border-box; }
 
 html {
-  color-scheme: dark;
   /* clip the VIEWPORT's horizontal overflow directly (no body-propagation
      question): even geometry that escapes body clipping - the fixed off-canvas
      drawer - can never make phones horizontally pannable. clip creates no
      scroll container, so position:sticky stays alive. Old engines ignore it
      and keep the body-level guards. */
   overflow-x: clip;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--head-h) + 1rem);
+  scrollbar-color: var(--rule-2) transparent;
 }
 
 body {
   margin: 0;
-  background:
-    radial-gradient(1100px 520px at 78% -10%, rgba(95,184,119,.10), transparent 60%),
-    var(--paper);
+  background: var(--bg);
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 1.0625rem;
+  font-size: 1.125rem;
   line-height: 1.65;
+  font-optical-sizing: auto;
+  font-kerning: normal;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   /* belt-and-suspenders: never a sideways scroll on phones. hidden is only the
-     fallback — it makes body a clip container, which KILLS position:sticky
+     fallback: it makes body a clip container, which KILLS position:sticky
      descendants on mobile engines (the cine hero scrolled away leaving a blank
      track; founder-reported 2026-07-18). clip gives the same protection
      without creating a scroll container, so the sticky pin survives. */
@@ -77,37 +140,158 @@ body {
   overflow-x: clip;
 }
 
-h1, h2, h3 { font-family: var(--sans); line-height: 1.2; color: #fff; letter-spacing: -0.012em; }
-h1 { font-size: 2.55rem; font-weight: 700; margin: 0 0 0.5rem; }
-h2 { font-size: 1.65rem; font-weight: 650; margin: 2.75rem 0 0.85rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--rule); }
-h3 { font-size: 1.2rem; font-weight: 600; margin: 1.75rem 0 0.5rem; }
+::selection { background: var(--sel); color: inherit; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
 
-a { color: var(--tilltrend); text-underline-offset: 2px; }
-a:hover { color: var(--tilltrend-dark); }
+h1, h2, h3 {
+  font-family: var(--sans);
+  color: var(--head);
+  text-wrap: balance;
+}
+h1 {
+  font-size: clamp(2.35rem, 1.45rem + 3.4vw, 4rem);
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  font-weight: 720;
+  margin: 0 0 1.25rem;
+}
+h2 {
+  font-size: clamp(1.6rem, 1.22rem + 1.45vw, 2.35rem);
+  line-height: 1.12;
+  letter-spacing: -0.024em;
+  font-weight: 680;
+  margin: 4.5rem 0 1.1rem;
+}
+h3 {
+  font-size: 1.22rem;
+  line-height: 1.3;
+  letter-spacing: -0.012em;
+  font-weight: 650;
+  margin: 2.25rem 0 0.55rem;
+}
+p { margin: 0 0 1.05em; }
+strong { font-weight: 650; color: var(--head); }
+ul, ol { padding-left: 1.3em; }
+li { margin: 0.35em 0; }
+li::marker { color: var(--ink-3); }
 
-code, pre { font-family: var(--mono); font-size: 0.875rem; }
+a {
+  color: var(--accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  transition: color 0.18s ease, text-decoration-color 0.18s ease;
+}
+a:hover { color: var(--accent-hover); text-decoration-color: currentColor; }
+
+code, pre, kbd { font-family: var(--mono); }
 code {
-  background: var(--code-bg);
+  font-size: 0.84em;
+  background: var(--surface-2);
   border: 1px solid var(--rule);
-  border-radius: 4px;
-  padding: 0.08rem 0.32rem;
-  color: #cfe9d8;
+  border-radius: 5px;
+  padding: 0.06em 0.34em;
+  color: var(--code-ink);
   overflow-wrap: anywhere;
 }
 pre {
-  background: var(--code-bg);
+  font-size: 0.84rem;
+  line-height: 1.6;
+  background: var(--surface-2);
   border: 1px solid var(--rule);
-  border-radius: 8px;
-  padding: 1rem 1.25rem;
+  border-radius: 10px;
+  padding: 0.95rem 1.15rem;
   overflow-x: auto;
-  line-height: 1.5;
-  color: #d6dae0;
+  color: var(--ink);
+  tab-size: 2;
 }
-pre code { background: none; border: none; padding: 0; color: inherit; }
+pre code { background: none; border: none; padding: 0; color: inherit; font-size: inherit; }
 
-/* layout */
-header.site, main, footer.site > * { max-width: 58rem; margin-left: auto; margin-right: auto; }
-main { padding: 0 1.25rem 3rem; }
+.muted { color: var(--ink-2); }
+.tagline, .lead {
+  font-size: clamp(1.15rem, 1.05rem + 0.45vw, 1.35rem);
+  line-height: 1.55;
+  color: var(--ink-2);
+  max-width: 40rem;
+  margin: 0 0 1.75rem;
+}
+
+/* ---- page frame ---- */
+
+main {
+  display: block;
+  max-width: 60rem;
+  margin: 0 auto;
+  padding: 3.5rem var(--gutter) 5.5rem;
+}
+main > p, main > ul, main > ol, main > h2, main > h3, main > dl { max-width: var(--measure); }
+main > h1 + p, main > h1 + .tagline { margin-top: -0.25rem; }
+
+main.narrow { max-width: 46rem; }
+
+/* reading pages: an "on this page" rail beside a measured column */
+main.doc {
+  max-width: var(--wide);
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0 4rem;
+}
+.doc-body { min-width: 0; max-width: 44rem; }
+.doc-body > p, .doc-body > ul, .doc-body > ol { max-width: var(--measure); }
+.doc-body > h2:first-child, .doc-body > section:first-child > h2:first-child { margin-top: 0; }
+.page-head { max-width: 46rem; margin-bottom: 3rem; }
+.page-head h1 { margin-bottom: 1rem; }
+.page-head .tagline, .page-head .lead { margin-bottom: 1.25rem; }
+
+.toc { font-size: 0.92rem; margin: 0 0 2.5rem; }
+.toc-title {
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: var(--ink-3);
+  margin: 0 0 0.6rem;
+}
+.toc ol, .toc ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.toc li { margin: 0; }
+.toc a {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.45rem;
+  color: var(--ink-2);
+  text-decoration: none;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+  line-height: 1.3;
+}
+.toc a:hover { color: var(--head); border-color: var(--rule-2); background: var(--accent-soft); }
+.toc .n { font-size: 0.8em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+
+@media (min-width: 1080px) {
+  main.doc { grid-template-columns: 13.5rem minmax(0, 44rem); justify-content: center; }
+  main.doc > .page-head { grid-column: 1 / -1; padding-left: calc(13.5rem + 4rem); max-width: none; }
+  main.doc > .page-head > * { max-width: 44rem; }
+  .toc {
+    position: sticky;
+    top: calc(var(--head-h) + 1.5rem);
+    align-self: start;
+    max-height: calc(100vh - var(--head-h) - 3rem);
+    overflow-y: auto;
+    margin: 0;
+    padding-right: 0.5rem;
+  }
+  .toc ol, .toc ul { display: block; border-left: 1px solid var(--rule); }
+  .toc a {
+    display: flex;
+    gap: 0.6rem;
+    border: 0;
+    border-radius: 0;
+    margin-left: -1px;
+    border-left: 2px solid transparent;
+    padding: 0.32rem 0 0.32rem 0.9rem;
+  }
+  .toc a:hover { background: none; border-left-color: var(--accent); }
+}
 
 /* ---- sticky app bar ---- */
 header.site {
@@ -116,32 +300,29 @@ header.site {
   z-index: 50;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
   gap: 0.5rem 1.5rem;
-  padding: 0.7rem 1.25rem;
+  min-height: var(--head-h);
+  padding: 0.6rem max(var(--gutter), calc((100% - var(--wide)) / 2 + var(--gutter)));
   background: var(--glass);
-  -webkit-backdrop-filter: blur(14px) saturate(130%);
-  backdrop-filter: blur(14px) saturate(130%);
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
   border-bottom: 1px solid var(--rule);
-  margin-bottom: 2.5rem;
-  /* keep the bar centered but let the blurred background span full width */
-  max-width: none;
 }
-header.site > * { max-width: 58rem; }
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.6rem;
   font-family: var(--sans);
   font-weight: 700;
-  font-size: 1.3rem;
+  font-size: 1.25rem;
   letter-spacing: -0.02em;
-  color: #fff;
+  color: var(--head);
   text-decoration: none;
   line-height: 1;
 }
-/* app-bar mark: the hexagon icon (CSS bg) + the wordmark text in the brand font,
-   replacing the portrait lockup so the bar stays compact and horizontal */
+.brand:hover { color: var(--head); }
+/* app-bar mark: the hexagon icon (CSS bg) + the wordmark text in the brand font.
+   The 30px box is measured by cine.js (ICON_H) as the dock target: keep it. */
 .brand::before {
   content: "";
   flex: none;
@@ -153,226 +334,430 @@ header.site > * { max-width: 58rem; }
   position: static; width: auto; height: auto;
   overflow: visible; clip: auto; white-space: nowrap;
 }
-header.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 0.4rem; align-items: center; margin-left: auto; }
+header.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem; align-items: center; margin-left: auto; }
 header.site nav a {
-  color: var(--ink-soft);
+  color: var(--ink-2);
   text-decoration: none;
   font-size: 0.95rem;
-  font-weight: 500;
-  padding: 0.35rem 0.6rem;
-  border-radius: 7px;
+  font-weight: 520;
+  padding: 0.45rem 0.7rem;
+  border-radius: var(--r-btn);
 }
-header.site nav a:hover { color: var(--ink); background: rgba(255,255,255,.05); }
-header.site nav a[aria-current="page"] { color: #fff; background: rgba(95,184,119,.12); }
+header.site nav a:hover { color: var(--head); background: var(--accent-soft); }
+header.site nav a[aria-current="page"] { color: var(--head); background: var(--accent-soft); font-weight: 620; }
+header.site nav a.cta { margin-left: 0.5rem; color: var(--btn-ink); }
+header.site nav a.cta:hover { color: var(--btn-ink); background: var(--btn-hover); }
 
-/* mobile nav (hamburger) — zero-JS CSS checkbox, mirrors the app (D-037). Hidden
-   on desktop; the media query at the bottom turns it on. The checkbox stays
+/* mobile nav (hamburger): zero-JS CSS checkbox, mirrors the app (D-037). Hidden
+   on desktop; the media query below turns it on. The checkbox stays
    off-screen but focusable; the burger + scrim are <label>s that toggle it. */
 .nav-cb { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
   overflow: hidden; clip: rect(0 0 0 0); border: 0; }
 .nav-burger, .nav-scrim { display: none; }
 
+/* ---- buttons ---- */
 .cta {
-  display: inline-block;
-  background: linear-gradient(180deg, #6cc888, var(--tilltrend));
-  color: #0b130d !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--btn);
+  color: var(--btn-ink) !important;
   text-decoration: none;
-  padding: 0.4rem 0.95rem;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: var(--r-btn);
   font-weight: 650;
-  border: 1px solid rgba(255,255,255,.14);
-  box-shadow: 0 1px 0 rgba(255,255,255,.18) inset, 0 6px 16px rgba(95,184,119,.18);
+  font-size: 0.95rem;
+  line-height: 1.2;
+  border: 0;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 1px 2px rgba(0, 0, 0, 0.14);
+  transition: background-color 0.18s ease, transform 0.18s ease;
 }
-.cta:hover { background: linear-gradient(180deg, #7ad196, var(--tilltrend-dark)); color: #0b130d !important; }
-.cta.big { font-size: 1.1rem; padding: 0.68rem 1.5rem; }
+.cta:hover { background: var(--btn-hover); color: var(--btn-ink) !important; }
+.cta:active { transform: translateY(1px); }
+.cta.big { font-size: 1.05rem; padding: 0.8rem 1.4rem; min-height: 48px; }
+.link-more {
+  font-weight: 620;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.link-more:hover { text-decoration: underline; }
 
-/* hero */
-.hero { margin: 1.5rem 0 3rem; }
-.hero h1 { font-size: 3rem; line-height: 1.08; }
-.hero p.tagline { font-size: 1.3rem; color: var(--ink-soft); max-width: 40rem; margin: 0.75rem 0 1.5rem; }
-.prelaunch {
-  display: inline-block;
-  font-size: 0.8rem;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-weight: 600;
-  color: var(--leaf);
-  background: rgba(95,184,119,.08);
-  border: 1px solid rgba(95,184,119,.4);
-  border-radius: 999px;
-  padding: 0.18rem 0.7rem;
-  margin-bottom: 1.1rem;
+.actions { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.6rem; margin: 0 0 1.25rem; }
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.92rem;
+  color: var(--ink-3);
+  margin: 0;
+}
+.status::before {
+  content: "";
+  width: 0.5rem; height: 0.5rem;
+  border-radius: 50%;
+  background: var(--emerald);
+  box-shadow: 0 0 0 3px rgba(95, 184, 119, 0.22);
 }
 
-/* three-up feature row — card panels */
-.threeup { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1.1rem; margin: 1.75rem 0; }
-.threeup section {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-top: 2px solid var(--tilltrend);
-  border-radius: 12px;
-  padding: 1.1rem 1.3rem;
-  box-shadow: var(--shadow);
-  transition: transform .15s ease, border-color .15s ease;
-}
-.threeup section:hover { transform: translateY(-2px); border-top-color: var(--leaf); }
-.threeup h3 { margin-top: 0.25rem; color: #fff; }
-
-/* receipt / demo block — the product's printed-receipt feel, on a dark card */
-.receipt {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-radius: 12px;
-  margin: 1.25rem 0;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-}
-.receipt .label {
-  font-family: var(--mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--leaf);
-  background: rgba(95,184,119,.06);
-  border-bottom: 1px solid var(--rule);
-  padding: 0.5rem 1.25rem;
-}
-.receipt pre { border: none; margin: 0; background: none; border-radius: 0; }
-
-/* the readable answer card (index demo) — what the app shows first since the
-   D-089/D-094 readable view; the verbatim receipt block below it remains the
-   source of truth, exactly as in the app */
-.answer-cards { display: grid; gap: 1.1rem; margin: 1.25rem 0; }
-.acard { background: var(--card); border: 1px solid var(--rule);
-  border-radius: 12px; padding: 1rem 1.3rem; box-shadow: var(--shadow); }
-.acard-head { display: flex; flex-wrap: wrap; align-items: baseline;
-  gap: 0.25rem 0.7rem; margin-bottom: 0.55rem; }
-.acard-metric { font-weight: 700; color: #fff; }
-.acard-scope { font-size: 0.82rem; color: var(--ink-soft); }
-.acard-big { font-size: 2rem; font-weight: 700; letter-spacing: -0.01em;
-  color: #fff; font-variant-numeric: tabular-nums; }
-.acard-caveats { margin: 0.7rem 0 0; padding-left: 1.15rem;
-  font-size: 0.85rem; color: var(--ink-soft); }
-.acard-caveats li { margin: 0.2rem 0; }
-.acard-interp { border-left: 3px solid var(--leaf); }
-.acard-prose { margin: 0; font-size: 0.95rem; line-height: 1.55; }
-
-/* evidence rows — emerald left border marks them verified */
-.claim-row {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--leaf);
-  border-radius: 12px;
-  padding: 1.1rem 1.5rem;
-  margin: 1.5rem 0;
-  box-shadow: var(--shadow);
-}
-.claim-row h3 { margin-top: 0; }
-.claim-row dt { font-size: 0.78rem; letter-spacing: 0.05em; text-transform: uppercase; color: var(--ink-soft); margin-top: 0.9rem; }
-.claim-row dd { margin: 0.25rem 0 0; }
-.observed { color: var(--leaf); font-weight: 650; }
-
-/* changelog */
-.changelog-note {
-  background: var(--card);
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--tilltrend);
-  border-radius: 0 10px 10px 0;
-  padding: 0.7rem 1.25rem;
-  margin: 1rem 0 2rem;
-}
-.changelog li { margin: 1rem 0; }
-
-/* misc */
-.muted { color: var(--ink-soft); }
+/* ---- callout: one quiet tinted panel, never a stripe ---- */
 .honest {
-  border: 1px solid var(--rule);
-  border-left: 3px solid var(--clay);
-  background: var(--card);
-  border-radius: 0 10px 10px 0;
-  padding: 0.7rem 1.25rem;
-  margin: 1.25rem 0;
+  background: var(--accent-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  border-radius: var(--r-card);
+  padding: 1.15rem 1.4rem;
+  margin: 1.75rem 0;
+  max-width: var(--measure);
 }
-.sample-download { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem 0.9rem; margin: 1.25rem 0; }
-.sample-download .cta { flex: none; }
-.dl-note { flex: 1 1 16rem; font-size: 0.9rem; color: var(--ink-soft); line-height: 1.45; }
+.honest p { margin: 0; }
+.honest p + p { margin-top: 0.75em; }
 
-/* support / FAQ — zero-JS <details> accordions, echoing the app's collapse zones */
-.support-hero { margin: 1.5rem 0 2rem; }
-.support-hero p.muted { font-size: 1.15rem; max-width: 42rem; margin: 0.5rem 0 0; }
-.faq {
-  background: var(--card);
+/* ---- the answer card: what the app shows first (D-089/D-094 readable view) ---- */
+.answer-cards { display: grid; gap: 0.9rem; margin: 0; }
+.acard {
+  background: var(--surface);
   border: 1px solid var(--rule);
-  border-radius: 12px;
-  margin: 0.75rem 0;
+  border-radius: var(--r-card);
+  padding: 1.15rem 1.35rem 1.2rem;
   box-shadow: var(--shadow);
+}
+.acard-head { display: flex; flex-wrap: wrap; align-items: baseline;
+  gap: 0.25rem 0.75rem; margin-bottom: 0.4rem; }
+.acard-metric { font-weight: 680; color: var(--head); }
+.acard-scope { font-size: 0.84rem; color: var(--ink-3); }
+.acard-big { font-size: clamp(1.9rem, 1.5rem + 1.6vw, 2.6rem); font-weight: 720; letter-spacing: -0.02em;
+  line-height: 1.1; color: var(--head); font-variant-numeric: tabular-nums; }
+.acard-caveats { margin: 0.75rem 0 0; padding-left: 1.1rem;
+  font-size: 0.88rem; color: var(--ink-2); }
+.acard-caveats li { margin: 0.2rem 0; }
+/* model prose is not receipted: a dashed edge says so, where the receipted card is solid */
+.acard-interp { background: transparent; box-shadow: none; border-style: dashed; border-color: var(--rule-2); }
+.acard-prose { margin: 0; font-size: 0.97rem; line-height: 1.6; color: var(--ink-2); }
+
+/* ---- terminal output: verbatim, wrapped rather than clipped ---- */
+.term {
+  border: 1px solid var(--rule);
+  border-radius: var(--r-card);
+  background: var(--surface-2);
+  margin: 1.5rem 0;
   overflow: hidden;
 }
+.term .label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.75rem;
+  font-size: 0.84rem;
+  color: var(--ink-2);
+  padding: 0.6rem 1.15rem;
+  border-bottom: 1px solid var(--rule);
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+}
+.term .label code { font-size: 0.82rem; }
+.term pre {
+  border: 0;
+  border-radius: 0;
+  margin: 0;
+  background: none;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 1rem 1.15rem 1.15rem;
+}
+
+/* ---- evidence rows ---- */
+.claim-row {
+  border-top: 1px solid var(--rule);
+  padding: 2rem 0 0.5rem;
+  margin: 0;
+}
+.claim-row:first-of-type { border-top: 0; padding-top: 0.5rem; }
+.claim-row h3 { margin: 0 0 1rem; font-size: 1.3rem; }
+.claim-row dl { margin: 0; }
+.claim-row dt {
+  font-size: 0.82rem;
+  font-weight: 650;
+  color: var(--ink-3);
+  margin: 1.1rem 0 0.3rem;
+}
+.claim-row dt:first-child { margin-top: 0; }
+.claim-row dd { margin: 0; max-width: var(--measure); }
+.claim-row dd pre { margin: 0 0 0.6rem; }
+@media (min-width: 720px) {
+  .claim-row dl { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 0.85rem 1.5rem; }
+  .claim-row dt { margin: 0; padding-top: 0.2rem; }
+}
+.observed { color: var(--accent); font-weight: 650; }
+.claim-row .observed::before {
+  content: "";
+  display: inline-block;
+  width: 0.38em; height: 0.72em;
+  margin: 0 0.55em 0.12em 0.1em;
+  border: solid currentColor;
+  border-width: 0 0.14em 0.14em 0;
+  transform: rotate(45deg);
+}
+
+/* ---- tables ---- */
+table { border-collapse: collapse; width: 100%; margin: 1.25rem 0 1.75rem; font-size: 0.97rem; }
+th, td { border: 0; border-bottom: 1px solid var(--rule); padding: 0.7rem 0.85rem 0.7rem 0; text-align: left; vertical-align: top; }
+th { font-family: var(--sans); font-weight: 650; font-size: 0.84rem; color: var(--ink-3); background: none; border-bottom-color: var(--rule-2); }
+td strong { white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+
+/* ---- support / FAQ: zero-JS <details>, set as a list rather than a stack of cards ---- */
+.support-hero { margin: 0 0 2.5rem; max-width: 46rem; }
+.support-hero p.muted { font-size: clamp(1.15rem, 1.05rem + 0.45vw, 1.35rem); line-height: 1.55; margin: 0; }
+.faq { border-bottom: 1px solid var(--rule); max-width: var(--measure); }
+h2 + .faq { border-top: 1px solid var(--rule); }
 .faq > summary {
   cursor: pointer;
   list-style: none;
   display: flex;
-  align-items: baseline;
-  gap: 0.6rem;
-  padding: 0.95rem 1.25rem;
-  font-weight: 600;
-  color: #fff;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0.25rem 1rem 0;
+  font-weight: 620;
+  color: var(--head);
+  min-height: 44px;
 }
 .faq > summary::-webkit-details-marker { display: none; }
-.faq > summary::before {
-  content: "+";
+.faq > summary::after, .entry > summary::after {
+  content: "";
   flex: none;
-  font-family: var(--mono);
-  font-size: 1.05rem;
-  line-height: 1;
-  color: var(--leaf);
-  width: 1rem;
-  text-align: center;
+  width: 0.5rem; height: 0.5rem;
+  margin-right: 0.35rem;
+  border: solid var(--ink-3);
+  border-width: 0 2px 2px 0;
+  transform: translateY(-0.15rem) rotate(45deg);
+  transition: transform 0.2s ease;
 }
-.faq[open] > summary::before { content: "\2212"; }   /* minus */
-.faq[open] > summary { border-bottom: 1px solid var(--rule); }
-.faq > summary:hover { background: rgba(255,255,255,.04); }
-.faq > summary:focus-visible { outline: 2px solid var(--leaf); outline-offset: -2px; }
-.faq-body { padding: 0.5rem 1.25rem 1.1rem 2.85rem; }
-.faq-body p { margin: 0.6rem 0 0; }
+.faq[open] > summary::after, .entry[open] > summary::after { transform: translateY(0.1rem) rotate(-135deg); }
+.faq > summary:hover { color: var(--accent); }
+.faq-body { padding: 0 0 1.15rem; color: var(--ink); }
+.faq-body p { margin: 0 0 0.75em; }
+.faq-body p:last-child { margin-bottom: 0; }
 
-table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
-th, td { border: 1px solid var(--rule); padding: 0.5rem 0.7rem; text-align: left; vertical-align: top; }
-th { background: var(--card-2); font-family: var(--sans); font-weight: 600; color: #fff; }
+/* ---- sample report page chrome ---- */
+.sample-download { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem 1rem; margin: 1.5rem 0; }
+.sample-download .cta { flex: none; }
+.dl-note { flex: 1 1 18rem; font-size: 0.92rem; color: var(--ink-2); line-height: 1.5; }
+.report h1, .report h2, .report h3 { letter-spacing: normal; text-wrap: wrap; }
 
-/* footer — deeper graphite band, white lockup */
-footer.site {
-  background: var(--paper-2);
-  color: #c7cdd4;
-  margin-top: 3rem;
-  padding: 2.25rem 0 2.75rem;
-  border-top: 1px solid var(--rule);
-  font-size: 0.92rem;
+/* ---- changelog: months, each entry a date and a title that opens ---- */
+.month { margin: 0 0 3.5rem; }
+.month > h2 {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.85rem;
+  margin: 0 0 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule-2);
+  font-size: clamp(1.45rem, 1.2rem + 1vw, 1.9rem);
 }
-footer.site > * { padding-left: 1.25rem; padding-right: 1.25rem; }
-footer.site p { margin: 0 auto 0.75rem; max-width: 58rem; }
-footer.site strong { color: #fff; }
-footer.site a { color: var(--leaf); }
-footer.site a:hover { color: #fff; }
-.footer-logo { height: 2.4rem; width: auto; display: block; margin-bottom: 1rem; }
-footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0.5rem auto 0; max-width: 58rem; }
-
-/* ---- mobile (<= 640px): layout is already fluid; tune type, the bar, spacing,
-   and let any wide table scroll instead of forcing page-wide scroll ---- */
+.month > h2 .count { font-size: 0.9rem; font-weight: 500; letter-spacing: 0; color: var(--ink-3); }
+.entries { list-style: none; margin: 0; padding: 0; }
+.entries > li { margin: 0; border-bottom: 1px solid var(--rule); }
+.entry > summary {
+  cursor: pointer;
+  list-style: none;
+  display: grid;
+  grid-template-columns: 6.6rem minmax(0, 1fr) auto;
+  align-items: baseline;
+  gap: 0.25rem 1.1rem;
+  padding: 0.95rem 0.25rem 0.95rem 0;
+  min-height: 44px;
+}
+.entry > summary::-webkit-details-marker { display: none; }
+.entry > summary::after { align-self: center; }
+.entry-date, .entry-static .entry-date {
+  font-size: 0.86rem;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.entry-title { font-weight: 620; color: var(--head); line-height: 1.45; }
+.entry > summary:hover .entry-title { color: var(--accent); }
+.entry-body {
+  padding: 0 0 1.35rem calc(6.6rem + 1.1rem);
+  max-width: calc(var(--measure) + 7.7rem);
+  color: var(--ink);
+}
+.entry-body p { margin: 0; }
+.entry-static {
+  display: grid;
+  grid-template-columns: 6.6rem minmax(0, 1fr);
+  gap: 0.25rem 1.1rem;
+  padding: 0.95rem 0;
+}
 @media (max-width: 640px) {
-  body { font-size: 1rem; }
-  /* clamp every centered column to the viewport so nothing can push sideways */
-  header.site > *, main, footer.site > * { max-width: 100%; }
-  h1 { font-size: 1.9rem; overflow-wrap: anywhere; }
-  .hero h1 { font-size: 2rem; }
-  h2 { font-size: 1.35rem; margin-top: 2rem; }
-  h3 { font-size: 1.12rem; }
+  .entry > summary { grid-template-columns: minmax(0, 1fr) auto; gap: 0.15rem 0.75rem; }
+  .entry > summary .entry-date { grid-column: 1; grid-row: 1; }
+  .entry > summary .entry-title { grid-column: 1; grid-row: 2; }
+  .entry > summary::after { grid-column: 2; grid-row: 1 / span 2; }
+  .entry-body { padding-left: 0; }
+  .entry-static { grid-template-columns: minmax(0, 1fr); }
+}
 
-  header.site { padding-left: 1rem; padding-right: 1rem; gap: 0.4rem 0.75rem;
-    flex-wrap: nowrap; }
-  main { padding-left: 1rem; padding-right: 1rem; }
+/* ---- footer: a dark band in both themes, the stacked lockup as its anchor ---- */
+footer.site {
+  background: var(--night-2);
+  color: var(--night-ink);
+  border-top: 1px solid var(--night-rule);
+  padding: 3.5rem max(var(--gutter), calc((100% - var(--wide)) / 2 + var(--gutter))) 3rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.25rem 3rem;
+  color-scheme: dark;
+}
+footer.site p { margin: 0; max-width: 62ch; }
+footer.site strong { color: var(--night-head); }
+footer.site a { color: var(--night-accent); }
+footer.site a:hover { color: #fff; }
+.footer-logo { height: 6.5rem; width: auto; display: block; }
+footer.site nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.4rem; }
+footer.site nav a { text-decoration: none; color: var(--night-ink); }
+footer.site nav a:hover { color: #fff; text-decoration: underline; }
+@media (min-width: 900px) {
+  footer.site { grid-template-columns: auto minmax(0, 1fr); align-items: start; }
+  .footer-logo { grid-row: 1 / span 2; }
+}
 
-  /* --- hamburger nav: an off-canvas glass drawer, mirroring the app --- */
+/* ---- homepage ---- */
+main.home { max-width: none; padding: 0 0 0; }
+.wrap { max-width: var(--wide); margin: 0 auto; padding: 0 var(--gutter); }
+.home-hero { padding-top: clamp(3rem, 6vw, 5.5rem); padding-bottom: 1rem; }
+.home-hero h1 { font-size: clamp(2.5rem, 1.2rem + 3.9vw, 4.4rem); margin-bottom: 1.5rem; }
+.home-hero h1 span { display: block; }   /* one sentence per line; each wraps on its own on a phone */
+.home-hero .tagline { max-width: 36rem; margin-bottom: 2.25rem; }
+
+/* padding-top only: a shorthand here would zero the .wrap gutter on phones */
+.section { padding-top: clamp(4rem, 8vw, 7rem); }
+.section-head { max-width: 44rem; margin-bottom: 2.75rem; }
+.section-head h2 { margin-top: 0; }
+.section-head p { color: var(--ink-2); max-width: var(--measure); }
+.section-head p:last-child { margin-bottom: 0; }
+
+/* the two answers */
+.versus { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2.5rem; align-items: start; }
+.vs-side { margin: 0; min-width: 0; }
+.vs-label {
+  display: block;
+  font-size: 0.86rem;
+  font-weight: 620;
+  color: var(--ink-3);
+  margin: 0 0 1rem;
+}
+.vs-real .vs-label { color: var(--accent); }
+.chat { display: grid; gap: 0.75rem; margin: 0 0 1.5rem; }
+.bubble {
+  margin: 0;
+  padding: 0.8rem 1.05rem;
+  border-radius: 16px;
+  line-height: 1.5;
+  max-width: 26rem;
+  font-size: 1rem;
+}
+.bubble.q { justify-self: end; background: var(--surface-2); color: var(--ink); border-bottom-right-radius: 5px; }
+.bubble.a { justify-self: start; background: var(--surface); border: 1px solid var(--rule); color: var(--ink); border-bottom-left-radius: 5px; }
+.vs-gaps { list-style: none; margin: 0; padding: 1.1rem 0 0; border-top: 1px dashed var(--rule-2); color: var(--ink-2); font-size: 0.97rem; }
+.vs-gaps li { margin: 0.3rem 0; }
+.vs-verdict { margin: 0.85rem 0 0; font-weight: 650; color: var(--head); }
+.vs-note { font-size: 0.9rem; color: var(--ink-3); margin: 1rem 0 1.25rem; max-width: 34rem; }
+
+@media (min-width: 960px) {
+  .versus { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 0 clamp(2.5rem, 5vw, 5rem); }
+  .vs-plain { position: sticky; top: calc(var(--head-h) + 2rem); padding-right: clamp(0rem, 2vw, 1.5rem); }
+  .vs-real { border-left: 1px solid var(--rule); padding-left: clamp(2.5rem, 5vw, 5rem); }
+}
+
+/* the receipt slip: the real receipt's fields, printed on paper in both themes */
+.slip-wrap { filter: drop-shadow(0 10px 18px rgba(10, 20, 15, 0.16)); max-width: 30rem; }
+.slip {
+  --tooth: 9px;
+  background: var(--paper);
+  color: var(--paper-ink);
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  line-height: 1.55;
+  padding: 1.15rem 1.25rem calc(1.1rem + var(--tooth));
+  border-radius: 4px 4px 0 0;
+  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+}
+.slip code { background: none; border: 0; padding: 0; color: inherit; font-size: inherit; }
+.slip-head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.15rem 1rem;
+  font-family: var(--sans);
+  font-size: 0.82rem;
+  color: var(--paper-mute);
+  padding-bottom: 0.7rem;
+  margin-bottom: 0.7rem;
+  border-bottom: 1px dashed var(--paper-rule);
+}
+.slip-head strong { color: var(--paper-ink); font-weight: 700; letter-spacing: 0.02em; }
+.slip-id { overflow-wrap: anywhere; color: var(--paper-ink); }
+.slip-lines { margin: 0; }
+.slip-lines > div { display: flex; justify-content: space-between; gap: 1rem; padding: 0.12rem 0; }
+.slip-lines dt { color: var(--paper-mute); }
+.slip-lines dd { margin: 0; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+.slip-sql { margin: 0.8rem 0; padding: 0.8rem 0; border-top: 1px dashed var(--paper-rule); border-bottom: 1px dashed var(--paper-rule); }
+.slip-k { display: block; font-family: var(--sans); color: var(--paper-mute); font-size: 0.8rem; margin-bottom: 0.35rem; }
+.slip pre { margin: 0; padding: 0; background: none; border: 0; color: var(--paper-ink); font-size: inherit; white-space: pre-wrap; }
+.slip-total dd { font-weight: 700; color: #1d6b40; }
+
+/* three lines on how it works: rules, not cards */
+.principles { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2rem 3rem; }
+.principles > div { border-top: 2px solid var(--head); padding-top: 1.1rem; }
+.principles h3 { margin: 0 0 0.6rem; font-size: 1.3rem; }
+.principles p { margin: 0; color: var(--ink-2); }
+@media (min-width: 860px) { .principles { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+
+.proof { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 4rem; align-items: start; }
+.proof > * { min-width: 0; }
+.proof-text h2 { margin-top: 0; }
+.proof-text > p { max-width: var(--measure); }
+.proof-text pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+@media (min-width: 1080px) { .proof { grid-template-columns: minmax(0, 26rem) minmax(0, 1fr); } .proof .term { margin-top: 0; } }
+
+.honest-band {
+  margin-top: clamp(4rem, 8vw, 7rem);
+  background: var(--bg-2);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+  padding: clamp(3rem, 6vw, 5rem) 0;
+}
+.honest-band h2 { margin-top: 0; }
+.honest-band .statement { font-size: clamp(1.2rem, 1.05rem + 0.6vw, 1.5rem); line-height: 1.55; max-width: 44rem; margin: 0; color: var(--ink); }
+
+.closer {
+  background: var(--night);
+  color: var(--night-ink);
+  padding: clamp(4rem, 8vw, 6.5rem) 0;
+  color-scheme: dark;
+}
+.closer h2 { color: var(--night-head); margin-top: 0; font-size: clamp(2rem, 1.4rem + 2.4vw, 3.2rem); }
+.closer p { max-width: 40rem; font-size: 1.15rem; }
+.closer strong { color: var(--night-head); }
+.closer .cta { --btn: #5FB877; --btn-hover: #70c487; --btn-ink: #07120b; margin-top: 0.75rem; }
+.closer + footer.site { border-top-color: var(--night-rule); }
+
+/* ---- mobile ---- */
+@media (max-width: 760px) {
+  :root { --head-h: 3.6rem; }
+  body { font-size: 1.0625rem; }
+  main { padding-top: 2.25rem; padding-bottom: 4rem; }
+  h2 { margin-top: 3.25rem; }
+
+  header.site { flex-wrap: nowrap; gap: 0.4rem 0.75rem; padding-top: 0.45rem; padding-bottom: 0.45rem; }
+
+  /* --- hamburger nav: an off-canvas drawer, mirroring the app --- */
   body:has(#nav-toggle:checked) { overflow: hidden; }   /* lock scroll while open */
   /* cine.js mirrors the checkbox into body.nav-open for engines without
      :has() (Firefox <121, Safari <15.4, older WebViews). SEPARATE rules on
@@ -381,26 +766,24 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
   body.nav-open { overflow: hidden; }
   .nav-burger {
     display: inline-flex; align-items: center; justify-content: center;
-    flex: none; margin-left: auto; width: 42px; height: 42px;
-    border-radius: 10px; color: var(--ink); cursor: pointer; z-index: 70;
+    flex: none; margin-left: auto; width: 44px; height: 44px;
+    border-radius: 10px; color: var(--head); cursor: pointer; z-index: 70;
   }
   .nav-burger svg { width: 24px; height: 24px; }
-  .nav-burger:hover, .nav-burger:active { background: rgba(255,255,255,.06); }
+  .nav-burger:hover, .nav-burger:active { background: var(--accent-soft); }
   .nav-burger .ic-close { display: none; }
   .nav-cb:checked ~ .nav-burger .ic-burger { display: none; }
   .nav-cb:checked ~ .nav-burger .ic-close { display: block; }
-  .nav-cb:focus-visible ~ .nav-burger { outline: 2px solid var(--leaf); outline-offset: 2px; }
+  .nav-cb:focus-visible ~ .nav-burger { outline: 2px solid var(--accent); outline-offset: 2px; }
 
   header.site nav {
     position: fixed; top: 0; right: 0; z-index: 60;
-    height: 100vh; height: 100dvh; width: min(82vw, 300px);
+    height: 100vh; height: 100dvh; width: min(84vw, 320px);
     margin: 0; flex-direction: column; flex-wrap: nowrap; align-items: stretch;
-    gap: 0.3rem; padding: 4.75rem 0.9rem 1.25rem;
-    background: rgba(12,16,21,0.985);   /* near-opaque so links stay legible even where backdrop-filter is unsupported */
-    -webkit-backdrop-filter: blur(16px) saturate(120%);
-    backdrop-filter: blur(16px) saturate(120%);
-    border-left: 1px solid rgba(255,255,255,.14);
-    box-shadow: -14px 0 36px rgba(0,0,0,.45);
+    gap: 0.25rem; padding: 4.75rem 1rem 1.25rem;
+    background: var(--surface);
+    border-left: 1px solid var(--rule);
+    box-shadow: -14px 0 36px rgba(0, 0, 0, 0.28);
     /* parked drawer is visibility:hidden, not merely translated: a fixed
        element's containing block is the VIEWPORT, so body's overflow-x can
        never clip it - on phones the translated drawer became horizontally
@@ -408,40 +791,41 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
        vertical scroll; founder-reported 2026-07-18). Hidden, it creates no
        overflow and takes no taps. visibility flips AFTER the slide-out. */
     transform: translateX(105%); visibility: hidden;
-    transition: transform .24s ease, visibility 0s .24s; overflow-y: auto;
+    transition: transform 0.24s ease, visibility 0s 0.24s; overflow-y: auto;
   }
   .nav-cb:checked ~ nav { transform: translateX(0); visibility: visible;
-    transition: transform .24s ease; }
-  header.site nav a { font-size: 1rem; padding: 0.7rem 0.8rem; border-radius: 9px; }
-  header.site nav a.cta { text-align: center; margin-top: 0.45rem; }
+    transition: transform 0.24s ease; }
+  header.site nav a { font-size: 1.05rem; padding: 0.75rem 0.85rem; border-radius: 9px; }
+  header.site nav a.cta { margin: 0.6rem 0 0; }
 
   .nav-scrim {
     display: block; position: fixed; inset: 0; z-index: 50;
-    background: rgba(0,0,0,.45);
-    opacity: 0; visibility: hidden; transition: opacity .24s ease;
+    background: rgba(0, 0, 0, 0.45);
+    opacity: 0; visibility: hidden; transition: opacity 0.24s ease;
   }
   .nav-cb:checked ~ .nav-scrim { opacity: 1; visibility: visible; }
 
   /* Open menu wins over the hero scene (homepage): the drawer lives inside the
      header's stacking context (z 50), which the scrub stage (z 55) normally
-     overpaints so the docking wordmark is not blurred by the bar glass — but
-     that also painted the scene OVER the open drawer (founder-reported
-     2026-07-18). While the drawer is open (scroll is locked then anyway), the
-     stage drops beneath the header context, so drawer + scrim stack above the
-     scene like on any other page; on close it pops back for the dock beat. */
+     overpaints so the docking wordmark is not blurred by the bar glass. While
+     the drawer is open (scroll is locked then anyway), the stage drops beneath
+     the header context, so drawer + scrim stack above the scene like on any
+     other page; on close it pops back for the dock beat (founder-reported
+     2026-07-18). */
   body:has(#nav-toggle:checked) .cine-stage { z-index: 40; }
   body.nav-open .cine-stage { z-index: 40; }   /* JS-mirrored :has() fallback */
 
-  .hero { margin: 1rem 0 2rem; }
-  .hero p.tagline { font-size: 1.1rem; }
-  .cta.big { font-size: 1rem; padding: 0.6rem 1.15rem; }
-
-  .threeup { gap: 0.85rem; }
-  .threeup section, .receipt, .claim-row, .honest, .changelog-note, .faq { min-width: 0; }
-  .faq-body { padding-left: 1.25rem; }
-
-  th, td { padding: 0.4rem 0.55rem; overflow-wrap: anywhere; }
+  .cta.big { font-size: 1rem; padding: 0.75rem 1.2rem; }
+  .home-hero h1 { max-width: none; }
+  th, td { padding: 0.55rem 0.6rem 0.55rem 0; overflow-wrap: anywhere; }
   table { display: block; overflow-x: auto; }
+  .term pre { font-size: 0.78rem; padding: 0.85rem 0.95rem 1rem; }
+  .slip { font-size: 0.78rem; padding-left: 1rem; padding-right: 1rem; }
+  .footer-logo { height: 5.5rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: 0.01ms !important; }
 }
 
 /* ---- cinematic hero (homepage): the firefly lockup scene (cine.js) ----
@@ -450,9 +834,10 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
    paint, so no-JS and reduced-motion visitors get the unchanged page (zero
    CLS, nothing gated). The ASSEMBLED resting scene is the CSS default state:
    cine.js only perturbs it (flicker, burn-out, dock), so a script failure
-   still leaves a complete static brand banner. */
+   still leaves a complete static brand banner. The band is always the night
+   ground, in the light theme too: the scene is drawn for it. */
 .cine { display: none; pointer-events: none; }
-.cine-on .cine { display: block; position: relative; height: 260vh; margin-top: -2.5rem; }
+.cine-on .cine { display: block; position: relative; height: 200vh; background: var(--night); }
 .cine-stage {
   position: sticky; top: 0;
   height: 100vh; height: 100svh;
@@ -462,8 +847,8 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
      below the mobile nav drawer (60); pointer-events stay off: the scene is
      decorative, the nav stays clickable through it */
   z-index: 55;
-  /* no background: the scene sits on the page's own graphite, so unpinning at
-     the end of the scrub can never produce a background seam */
+  /* no background of its own: the band behind it is the track, so unpinning
+     at the end of the scrub can never produce a background seam */
 }
 .cine-lockup {
   display: flex; align-items: center; gap: clamp(2rem, 4vw, 60px);
@@ -494,16 +879,17 @@ footer.site nav { display: flex; flex-wrap: wrap; gap: 0.25rem 1.1rem; margin: 0
   position: absolute; left: 50%; bottom: calc(3.4rem + 4vh);
   transform: translateX(-50%);
   font-size: 0.78rem; font-weight: 600; letter-spacing: 0.16em;
-  text-transform: uppercase; color: var(--ink-soft);
+  text-transform: uppercase; color: #8e9993;
 }
 .cine-hint::after { content: "Scroll"; }
 @media (max-width: 640px) {
-  /* LONGER track than desktop (260vh), not shorter: a thumb-fling covers
-     several viewports where a wheel tick covers ~200px, so per-gesture
-     progress must be diluted or the whole story plays in two swipes
-     (founder-reported 2026-07-18; ratio carried from the 340/480 pairing).
-     cine.js also eases harder on touch. */
-  .cine-on .cine { height: 420vh; }
+  /* LONGER track than desktop, not shorter: a thumb-fling covers several
+     viewports where a wheel tick covers ~200px, so per-gesture progress must
+     be diluted or the whole story plays in two swipes (founder-reported
+     2026-07-18; the 1.6 phone-to-desktop ratio carried from the 260/420
+     pairing when both were shortened in the 2026-10-24 redesign). cine.js
+     also eases harder on touch. */
+  .cine-on .cine { height: 320vh; }
   .cine-hint::after { content: "Swipe"; }   /* phones swipe, they don't scroll */
   .cine-stage { padding: 0 1.1rem; }
   .cine-lockup { flex-direction: column; gap: 5svh; }

@@ -35,16 +35,32 @@
   </nav>
 </header>
 
-<main>
+<main class="doc">
 
+<div class="page-head">
 <h1>How Tilltrend works</h1>
 <p class="tagline">An AI analyst is only useful if you can trust the numbers.
 Tilltrend's design starts from the assumption that you shouldn't have to trust.
 You should be able to check.</p>
 
 <p><a class="cta" href="sample-report.html">See a sample report &rarr;</a></p>
+</div>
 
-<h2>The Ask flow</h2>
+<nav class="toc" aria-label="On this page">
+  <p class="toc-title">On this page</p>
+  <ol>
+    <li><a href="#ask">The Ask flow</a></li>
+    <li><a href="#receipts">Receipts and replay</a></li>
+    <li><a href="#refusal">Honest refusal</a></li>
+    <li><a href="#app">The admin app today</a></li>
+    <li><a href="#not-yet">Not supported yet</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+  </ol>
+</nav>
+
+<div class="doc-body">
+
+<h2 id="ask">The Ask flow</h2>
 
 <p>You type a question: "What was total revenue?", "Compare June and July 2013
 revenue", "Which countries drive revenue?". What happens next is deliberately
@@ -71,7 +87,7 @@ receipted facts. If the model invents a number, the draft is rejected and
 regenerated; two strikes and a deterministic fallback ships instead. This has
 caught a real violation in testing. The bad draft never shipped.</p>
 
-<h2>Receipts and replay, simply</h2>
+<h2 id="receipts">Receipts and replay, simply</h2>
 
 <p>Every receipted fact carries a receipt id and a hash, like
 <code>rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a</code>.
@@ -92,13 +108,13 @@ derived values, delete caveats) and asserts each forgery fails with exactly the
 predicted signature. Commands and observed results are on the
 <a href="evidence.html">evidence page</a>.</p>
 
-<h2>Honest refusal</h2>
+<h2 id="refusal">Honest refusal</h2>
 
 <p>When the data to answer a question doesn't exist, Tilltrend says so, in
 governed text quoted from the metric documentation, not model improvisation.
 Verbatim, from a real run on 2026-06-13; re-run 2026-07-26, byte-identical:</p>
 
-<div class="receipt">
+<div class="term">
   <div class="label">Real output &middot; <code>python app\scripts\ask.py "Show me the conversion funnel"</code></div>
 <pre>RECEIPTED FACTS
 ===============
@@ -114,7 +130,7 @@ governed source: app/docs/metrics.md</pre>
 <p>No proxy metric, no plausible-sounding guess. Order data alone cannot recover
 pre-purchase funnel steps, so the product refuses rather than approximates.</p>
 
-<h2>The admin app today</h2>
+<h2 id="app">The admin app today</h2>
 
 <p>Eight server-rendered pages exist now. Every number on them is queried live
 at render time using the canonical SQL from the governed metric definitions,
@@ -139,7 +155,7 @@ and each KPI is footnoted with its metric id.</p>
   the capability is real, not before.</p>
 </div>
 
-<h2>Not supported yet</h2>
+<h2 id="not-yet">Not supported yet</h2>
 
 <ul>
   <li><strong>Session funnel</strong> (visits → views → cart → checkout →
@@ -154,7 +170,7 @@ and each KPI is footnoted with its metric id.</p>
   won't publish it before those are real.</li>
 </ul>
 
-<h2>Architecture, for technical readers</h2>
+<h2 id="architecture">Architecture, for technical readers</h2>
 
 <h3>A real layered warehouse</h3>
 <p>Store data lands in a medallion warehouse on PostgreSQL:
@@ -189,6 +205,8 @@ renderer tests prove what's stored is what's shown.</p>
 
 <p class="muted">All of the above is checkable: <a href="evidence.html">every
 claim, with its command, on the evidence page</a>.</p>
+
+</div>
 
 </main>
 
