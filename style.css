@@ -27,7 +27,10 @@
   font-display: swap;
 }
 
-:root {
+/* .report is the sample report's sheet, white in both themes, so it keeps the
+   light value of every token: the dark override below names :root alone. Without
+   it the dark theme drew the report's bold text near-white on that white sheet. */
+:root, .report {
   color-scheme: light dark;
 
   /* fixed: the brand and the always-dark bands */
@@ -268,8 +271,9 @@ main.doc {
 .toc .n { font-size: 0.8em; color: var(--ink-3); font-variant-numeric: tabular-nums; }
 
 @media (min-width: 1080px) {
-  main.doc { grid-template-columns: 13.5rem minmax(0, 44rem); justify-content: center; }
-  main.doc > .page-head { grid-column: 1 / -1; padding-left: calc(13.5rem + 4rem); max-width: none; }
+  /* title and rail hang from the logo's left edge, the column beside the rail */
+  main.doc { grid-template-columns: 13.5rem minmax(0, 44rem); justify-content: start; }
+  main.doc > .page-head { grid-column: 1 / -1; max-width: none; }
   main.doc > .page-head > * { max-width: 44rem; }
   .toc {
     position: sticky;
@@ -308,6 +312,10 @@ header.site {
   backdrop-filter: blur(14px) saturate(140%);
   border-bottom: 1px solid var(--rule);
 }
+/* over the night band the light glass blurs to a muddy grey, so the homepage
+   bar is opaque while the scene is on. The blur stays, so the phone drawer keeps
+   the containing block it was tested with. */
+.cine-on header.site { background: var(--bg); }
 .brand {
   display: inline-flex;
   align-items: center;
@@ -397,7 +405,6 @@ header.site nav a.cta:hover { color: var(--btn-ink); background: var(--btn-hover
   width: 0.5rem; height: 0.5rem;
   border-radius: 50%;
   background: var(--emerald);
-  box-shadow: 0 0 0 3px rgba(95, 184, 119, 0.22);
 }
 
 /* ---- callout: one quiet tinted panel, never a stripe ---- */
@@ -481,7 +488,7 @@ header.site nav a.cta:hover { color: var(--btn-ink); background: var(--btn-hover
 }
 .claim-row dt:first-child { margin-top: 0; }
 .claim-row dd { margin: 0; max-width: var(--measure); }
-.claim-row dd pre { margin: 0 0 0.6rem; }
+.claim-row dd pre { margin: 0 0 0.6rem; white-space: pre-wrap; overflow-wrap: anywhere; }
 @media (min-width: 720px) {
   .claim-row dl { display: grid; grid-template-columns: 8.5rem minmax(0, 1fr); gap: 0.85rem 1.5rem; }
   .claim-row dt { margin: 0; padding-top: 0.2rem; }
@@ -501,7 +508,7 @@ header.site nav a.cta:hover { color: var(--btn-ink); background: var(--btn-hover
 table { border-collapse: collapse; width: 100%; margin: 1.25rem 0 1.75rem; font-size: 0.97rem; }
 th, td { border: 0; border-bottom: 1px solid var(--rule); padding: 0.7rem 0.85rem 0.7rem 0; text-align: left; vertical-align: top; }
 th { font-family: var(--sans); font-weight: 650; font-size: 0.84rem; color: var(--ink-3); background: none; border-bottom-color: var(--rule-2); }
-td strong { white-space: nowrap; }
+td:first-child strong { white-space: nowrap; }
 tr:last-child td { border-bottom: 0; }
 
 /* ---- support / FAQ: zero-JS <details>, set as a list rather than a stack of cards ---- */
@@ -674,19 +681,17 @@ main.home { max-width: none; padding: 0 0 0; }
   .vs-real { border-left: 1px solid var(--rule); padding-left: clamp(2.5rem, 5vw, 5rem); }
 }
 
-/* the receipt slip: the real receipt's fields, printed on paper in both themes */
-.slip-wrap { filter: drop-shadow(0 10px 18px rgba(10, 20, 15, 0.16)); max-width: 30rem; }
+/* the receipt slip: the real receipt's fields on a flat paper panel in both themes */
+.slip-wrap { max-width: 30rem; }
 .slip {
-  --tooth: 9px;
   background: var(--paper);
   color: var(--paper-ink);
   font-family: var(--mono);
   font-size: 0.82rem;
   line-height: 1.55;
-  padding: 1.15rem 1.25rem calc(1.1rem + var(--tooth));
-  border-radius: 4px 4px 0 0;
-  -webkit-mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
-  mask: conic-gradient(from -45deg at bottom, #0000, #000 1deg 89deg, #0000 90deg) 50% / calc(2 * var(--tooth)) 100%;
+  padding: 1.15rem 1.25rem 1.1rem;
+  border: 1px solid var(--paper-rule);
+  border-radius: 6px;
 }
 .slip code { background: none; border: 0; padding: 0; color: inherit; font-size: inherit; }
 .slip-head {
@@ -748,16 +753,13 @@ main.home { max-width: none; padding: 0 0 0; }
 .closer .cta { --btn: #5FB877; --btn-hover: #70c487; --btn-ink: #07120b; margin-top: 0.75rem; }
 .closer + footer.site { border-top-color: var(--night-rule); }
 
-/* ---- mobile ---- */
-@media (max-width: 760px) {
-  :root { --head-h: 3.6rem; }
-  body { font-size: 1.0625rem; }
-  main { padding-top: 2.25rem; padding-bottom: 4rem; }
-  h2 { margin-top: 3.25rem; }
-
+/* ---- hamburger nav: an off-canvas drawer, mirroring the app. Its own
+   breakpoint, wider than the phone layout below: with Support in it the bar
+   wraps to a second row at 820px and narrower (measured 2026-10-24), so
+   tablets in portrait get the drawer too ---- */
+@media (max-width: 900px) {
   header.site { flex-wrap: nowrap; gap: 0.4rem 0.75rem; padding-top: 0.45rem; padding-bottom: 0.45rem; }
 
-  /* --- hamburger nav: an off-canvas drawer, mirroring the app --- */
   body:has(#nav-toggle:checked) { overflow: hidden; }   /* lock scroll while open */
   /* cine.js mirrors the checkbox into body.nav-open for engines without
      :has() (Firefox <121, Safari <15.4, older WebViews). SEPARATE rules on
@@ -814,7 +816,14 @@ main.home { max-width: none; padding: 0 0 0; }
      2026-07-18). */
   body:has(#nav-toggle:checked) .cine-stage { z-index: 40; }
   body.nav-open .cine-stage { z-index: 40; }   /* JS-mirrored :has() fallback */
+}
 
+/* ---- mobile ---- */
+@media (max-width: 760px) {
+  :root { --head-h: 3.6rem; }
+  body { font-size: 1.0625rem; }
+  main { padding-top: 2.25rem; padding-bottom: 4rem; }
+  h2 { margin-top: 3.25rem; }
   .cta.big { font-size: 1rem; padding: 0.75rem 1.2rem; }
   .home-hero h1 { max-width: none; }
   th, td { padding: 0.55rem 0.6rem 0.55rem 0; overflow-wrap: anywhere; }
