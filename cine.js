@@ -71,13 +71,13 @@
     return Math.min(1, Math.max(0.05, v));
   }
 
-  /* Drawer-over-scene without :has(): mirror the nav checkbox into a body
+  /* Drawer-over-scene without :has(): mirror the nav checkbox into a root
      class so the z-drop + scroll-lock rules have a selector every engine
-     can match (style.css body.nav-open). */
+     can match (style.css html.nav-open; the lock must sit on the root). */
   var navCb = document.getElementById("nav-toggle");
   if (navCb) {
     var syncNav = function () {
-      document.body.classList.toggle("nav-open", navCb.checked);
+      root.classList.toggle("nav-open", navCb.checked);
     };
     navCb.addEventListener("change", syncNav);
     syncNav();

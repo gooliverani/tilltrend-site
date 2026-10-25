@@ -358,8 +358,12 @@ header.site nav a.cta:hover { color: var(--btn-ink); background: var(--btn-hover
 
 /* mobile nav (hamburger): zero-JS CSS checkbox, mirrors the app (D-037). Hidden
    on desktop; the media query below turns it on. The checkbox stays
-   off-screen but focusable; the burger + scrim are <label>s that toggle it. */
-.nav-cb { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0;
+   off-screen but focusable; the burger + scrim are <label>s that toggle it.
+   A label tap focuses it, and a focused element inside html's scroll-padding
+   band counts as hidden under the header, so the page scrolled 430px to
+   reveal it on every tap. top: 50vh keeps it mid-viewport, out of that band
+   whatever its height (2026-10-25). */
+.nav-cb { position: absolute; top: 50vh; width: 1px; height: 1px; margin: -1px; padding: 0;
   overflow: hidden; clip: rect(0 0 0 0); border: 0; }
 .nav-burger, .nav-scrim { display: none; }
 
@@ -760,12 +764,18 @@ main.home { max-width: none; padding: 0 0 0; }
 @media (max-width: 900px) {
   header.site { flex-wrap: nowrap; gap: 0.4rem 0.75rem; padding-top: 0.45rem; padding-bottom: 0.45rem; }
 
-  body:has(#nav-toggle:checked) { overflow: hidden; }   /* lock scroll while open */
-  /* cine.js mirrors the checkbox into body.nav-open for engines without
+  /* lock scroll while open, on the ROOT, never on body: html is not
+     overflow:visible (overflow-x: clip above), so body's overflow does not
+     propagate to the viewport, and overflow:hidden made body a scroll
+     container of its own. The sticky header, drawer inside it, then pinned to
+     body's unscrolled top: a tap below the fold opened the menu at the top of
+     the page, off screen (founder-reported 2026-10-25). */
+  html:has(#nav-toggle:checked) { overflow: hidden; }
+  /* cine.js mirrors the checkbox into html.nav-open for engines without
      :has() (Firefox <121, Safari <15.4, older WebViews). SEPARATE rules on
      purpose: one unsupported selector in a list drops the whole rule in
      exactly those engines. */
-  body.nav-open { overflow: hidden; }
+  html.nav-open { overflow: hidden; }
   .nav-burger {
     display: inline-flex; align-items: center; justify-content: center;
     flex: none; margin-left: auto; width: 44px; height: 44px;
@@ -802,6 +812,11 @@ main.home { max-width: none; padding: 0 0 0; }
 
   .nav-scrim {
     display: block; position: fixed; inset: 0; z-index: 50;
+    /* the bar's backdrop-filter makes the BAR the containing block, so inset: 0
+       alone sized the scrim to the 58px bar and a tap beside the drawer landed
+       on the page instead of closing it. Viewport height, like the drawer's
+       (2026-10-25). */
+    height: 100vh; height: 100dvh;
     background: rgba(0, 0, 0, 0.45);
     opacity: 0; visibility: hidden; transition: opacity 0.24s ease;
   }
@@ -815,7 +830,7 @@ main.home { max-width: none; padding: 0 0 0; }
      other page; on close it pops back for the dock beat (founder-reported
      2026-07-18). */
   body:has(#nav-toggle:checked) .cine-stage { z-index: 40; }
-  body.nav-open .cine-stage { z-index: 40; }   /* JS-mirrored :has() fallback */
+  html.nav-open .cine-stage { z-index: 40; }   /* JS-mirrored :has() fallback */
 }
 
 /* ---- mobile ---- */
@@ -908,7 +923,13 @@ main.home { max-width: none; padding: 0 0 0; }
      pairing when both were shortened in the 2026-10-24 redesign). cine.js
      also eases harder on touch. */
   .cine-on .cine { height: 320vh; }
-  .cine-live .cine { margin-bottom: calc((100svh - 320vh) * 0.42); }
+  /* phones overlap only the last 15%: the H1 sits 214px under main's top at
+     every phone width measured, so at 42% it was whole by p 0.70 while the
+     mark was still flying. At 15% the edge reaches the fold at p 0.85, the
+     mark 98% home, and the H1 is whole by the scrub's end, p 0.955 to 1.002
+     on seven phones (founder, 2026-10-25: "so the content holds until the
+     mark lands"). */
+  .cine-live .cine { margin-bottom: calc((100svh - 320vh) * 0.15); }
   .cine-hint::after { content: "Swipe"; }   /* phones swipe, they don't scroll */
   .cine-stage { padding: 0 1.1rem; }
   .cine-lockup { flex-direction: column; gap: 5svh; }
