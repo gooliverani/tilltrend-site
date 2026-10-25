@@ -915,6 +915,22 @@ main.home { max-width: none; padding: 0 0 0; }
    the header (50) and the stage (55); the docking mark clears its edge. */
 .cine-live .cine { margin-bottom: calc((100svh - 200vh) * 0.42); }
 .cine-live main.home { position: relative; background: var(--bg); }
+/* every portrait screen above 640px takes the phones' 15% on the desktop
+   track. There the scrub span is a whole screen height and the H1 sits a few
+   hundred pixels under main's top, so at 42% it was whole by p 0.65 to 0.76
+   with the mark 4% to 66% home. At 15% the edge reaches the fold at p 0.85,
+   the mark 98% home, and the H1 is whole by about the scrub's end (live
+   scrub: 0.969 to 0.999 on eight tablets, 0.989 on the 12.9-inch iPad, 0.919
+   to 0.989 on five taller screens up to 2160x3840, and just after the end on
+   a square window, which CSS counts as portrait). The founder, 2026-10-25,
+   in three steps: 641px to 900px ("shrink the hero overlap so the headline
+   holds until the mark lands"), then the 12.9-inch iPad, then "Remove the
+   upper width limit so every portrait screen above 640px takes the 15%
+   share". Landscape keeps 42%: a phone or an iPad on its side already has
+   the H1 whole as the mark lands, or nearly, there (p 0.81 to 0.99). */
+@media (min-width: 641px) and (orientation: portrait) {
+  .cine-live .cine { margin-bottom: calc((100svh - 200vh) * 0.15); }
+}
 @media (max-width: 640px) {
   /* LONGER track than desktop, not shorter: a thumb-fling covers several
      viewports where a wheel tick covers ~200px, so per-gesture progress must
