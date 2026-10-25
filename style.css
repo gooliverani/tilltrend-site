@@ -915,8 +915,8 @@ main.home { max-width: none; padding: 0 0 0; }
    the header (50) and the stage (55); the docking mark clears its edge. */
 .cine-live .cine { margin-bottom: calc((100svh - 200vh) * 0.42); }
 .cine-live main.home { position: relative; background: var(--bg); }
-/* every portrait screen above 640px takes the phones' 15% on the desktop
-   track. There the scrub span is a whole screen height and the H1 sits a few
+/* every portrait screen above 640px, and every screen 1920px wide or more,
+   takes the phones' 15% on the desktop track. In portrait the scrub span is a whole screen height and the H1 sits a few
    hundred pixels under main's top, so at 42% it was whole by p 0.65 to 0.76
    with the mark 4% to 66% home. At 15% the edge reaches the fold at p 0.85,
    the mark 98% home, and the H1 is whole by about the scrub's end (live
@@ -926,9 +926,16 @@ main.home { max-width: none; padding: 0 0 0; }
    in three steps: 641px to 900px ("shrink the hero overlap so the headline
    holds until the mark lands"), then the 12.9-inch iPad, then "Remove the
    upper width limit so every portrait screen above 640px takes the 15%
-   share". Landscape keeps 42%: a phone or an iPad on its side already has
-   the H1 whole as the mark lands, or nearly, there (p 0.81 to 0.99). */
-@media (min-width: 641px) and (orientation: portrait) {
+   share". Screens 1920px wide and up take it in landscape too (founder,
+   the same day: "Apply the 15% hero hold to big landscape monitors too
+   (2560x1440 and 1920x1080)"): at 42% their H1 was whole at p 0.69 to
+   0.83 with the mark 16% to 96% home; at 15% it is whole about as the mark
+   lands, 18 to 90px of scroll after the end on seven monitors from 1920x960
+   to 3440x1440, at p 0.959 on 3840x2160. Narrower landscape keeps 42%,
+   whole at p 0.81 to 0.99 on the phones, iPads and desktops measured; the
+   cut is a hard line, so a window just under it (1919x1080) still reads
+   p 0.799 with the mark 87% home. */
+@media (min-width: 641px) and (orientation: portrait), (min-width: 1920px) {
   .cine-live .cine { margin-bottom: calc((100svh - 200vh) * 0.15); }
 }
 @media (max-width: 640px) {
