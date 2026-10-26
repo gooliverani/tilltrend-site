@@ -89,8 +89,16 @@
      converted to stage space per frame in apply(), because the stage only
      coincides with the viewport while its sticky pin is engaged. The 30px is
      the .brand::before icon box (style.css); a pseudo-element has no rect of
-     its own, so it is derived from the brand's left edge. */
+     its own, so it is derived from the brand's left edge.
+
+     The target is the MARK inside that box, not the box: the icon file pads
+     its mark inside a wider viewBox drawn at background-size: contain, so
+     docking onto the box landed the mark 23% too large and 0.7px right. Both
+     files draw the hex in the same coordinates, so the hero's viewBox is
+     mapped into the icon's at the contain scale. ICON_VB is the icon file's
+     viewBox; test_motion_sync pins it to the file. */
   var ICON_H = 30;
+  var ICON_VB = [-300, -290, 600, 580];
   var m = null;
   function measure() {
     lockup.style.transform = "";              /* dock base must be untransformed */
@@ -98,10 +106,15 @@
     var lr = lockup.getBoundingClientRect();
     var hx = hexSvg.getBoundingClientRect();
     var br = brand.getBoundingClientRect();
+    var hv = hexSvg.viewBox.baseVal;
+    var k = Math.min(ICON_H / ICON_VB[2], ICON_H / ICON_VB[3]);
+    var ix = br.left + (ICON_H - ICON_VB[2] * k) / 2;
+    var iy = br.top + (br.height - ICON_H) / 2 + (ICON_H - ICON_VB[3] * k) / 2;
     m = {
       lock: { x: lr.left - st.left, y: lr.top - st.top },
-      mark: { x: hx.left - st.left, y: hx.top - st.top, h: hx.height },
-      icon: { x: br.left, y: br.top + (br.height - ICON_H) / 2 }   /* viewport */
+      mark: { x: hx.left - st.left, y: hx.top - st.top, w: hx.width },
+      icon: { x: ix + (hv.x - ICON_VB[0]) * k,                  /* viewport */
+              y: iy + (hv.y - ICON_VB[1]) * k, w: hv.width * k }
     };
   }
 
@@ -139,9 +152,9 @@
     /* wordmark: burns out with the tagline, so only the mark docks home */
     if (word) word.style.opacity = String(1 - seg(p1, 0.55, 0.95));
 
-    /* dock: shrink the WHOLE lockup so the mark lands exactly on the header
-       icon box, then crossfade lockup out / header brand in */
-    var s = lerp(1, ICON_H / m.mark.h, dp);
+    /* dock: shrink the WHOLE lockup so the mark lands exactly on the mark in
+       the header icon, then crossfade lockup out / header brand in */
+    var s = lerp(1, m.icon.w / m.mark.w, dp);
     var mrx = m.mark.x - m.lock.x, mry = m.mark.y - m.lock.y;
     var tx = lerp(m.mark.x, icon.x, dp) - m.lock.x - s * mrx;
     var ty = lerp(m.mark.y, icon.y, dp) - m.lock.y - s * mry;
