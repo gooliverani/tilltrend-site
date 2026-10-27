@@ -337,6 +337,13 @@ header.site {
   width: 30px; height: 30px;
   background: url("tilltrend-icon.svg") center / contain no-repeat;
 }
+/* the graphite faces sat at 1.24:1 on the dark bar (2026-10-27), so the dark
+   theme swaps in the same drawing with lighter faces. Image only: the box,
+   position and contain above still apply, and both files share the viewBox and
+   polygons cine.js docks onto (test_motion_sync pins them). */
+@media (prefers-color-scheme: dark) {
+  .brand::before { background-image: url("tilltrend-icon-dark.svg"); }
+}
 .brand .logo { display: none; }
 .brand .wordmark {
   position: static; width: auto; height: auto;
