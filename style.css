@@ -595,6 +595,9 @@ h2 + .faq { border-top: 1px solid var(--rule); }
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+/* A browser may end a line after a hyphen, so a date is held on one line (T-4).
+   app/server/display.py writes this element, as it does for the app's pages. */
+.date-whole { white-space: nowrap; }
 .entry-title { font-weight: 620; color: var(--head); line-height: 1.45; }
 .entry > summary:hover .entry-title { color: var(--accent); }
 .entry-body {
@@ -633,8 +636,8 @@ footer.site {
 }
 footer.site p { margin: 0; max-width: 62ch; }
 footer.site strong { color: var(--night-head); }
-footer.site a { color: var(--night-accent); }
-footer.site a:hover { color: #fff; }
+footer.site a, .closer p a { color: var(--night-accent); }
+footer.site a:hover, .closer p a:hover { color: #fff; }
 .footer-logo { height: 6.5rem; width: auto; display: block; }
 footer.site nav { display: flex; flex-wrap: wrap; gap: 0.35rem 1.4rem; }
 footer.site nav a { text-decoration: none; color: var(--night-ink); }
@@ -825,9 +828,15 @@ main.home { max-width: none; padding: 0 0 0; }
        (2026-10-25). */
     height: 100vh; height: 100dvh;
     background: rgba(0, 0, 0, 0.45);
-    opacity: 0; visibility: hidden; transition: opacity 0.24s ease;
+    /* visibility flips AFTER the fade, as on the drawer: transitioning opacity alone
+       let it flip as the close began, so the dim layer vanished at once (T-22). It
+       takes no taps while it fades: it is a label for the checkbox, so a second tap
+       during the fade reopened the drawer, in Chrome and Firefox. */
+    opacity: 0; visibility: hidden; pointer-events: none;
+    transition: opacity 0.24s ease, visibility 0s 0.24s;
   }
-  .nav-cb:checked ~ .nav-scrim { opacity: 1; visibility: visible; }
+  .nav-cb:checked ~ .nav-scrim { opacity: 1; visibility: visible; pointer-events: auto;
+    transition: opacity 0.24s ease; }
 
   /* Open menu wins over the hero scene (homepage): the drawer lives inside the
      header's stacking context (z 50), which the scrub stage (z 55) normally
@@ -856,7 +865,9 @@ main.home { max-width: none; padding: 0 0 0; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition-duration: 0.01ms !important; }
+  /* the delay too: the drawer and backdrop wait 0.24s to hide, and with no fade to
+     wait for the backdrop would sit unseen over the page catching taps (T-22) */
+  *, *::before, *::after { transition-duration: 0.01ms !important; transition-delay: 0s !important; }
 }
 
 /* ---- cinematic hero (homepage): the firefly lockup scene (cine.js) ----

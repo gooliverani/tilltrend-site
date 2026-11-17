@@ -4,16 +4,16 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Tilltrend: the AI analyst for your store. Every answer shows its work.</title>
-<meta name="description" content="Tilltrend is an AI analyst for ecommerce stores. Every number it gives you carries a receipt: the governed metric, the exact SQL, and a replayable hash. Pre-launch, built in public.">
+<meta name="description" content="Tilltrend is an AI analyst for ecommerce stores. Every figure it gives you carries a receipt: the governed metric, the exact SQL, and a replayable hash. On the Shopify App Store, built in public.">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Tilltrend">
 <meta property="og:title" content="Tilltrend: the AI analyst for your store">
-<meta property="og:description" content="Tilltrend is an AI analyst for ecommerce stores. Every number it gives you carries a receipt: the governed metric, the exact SQL, and a replayable hash. Pre-launch, built in public.">
+<meta property="og:description" content="Tilltrend is an AI analyst for ecommerce stores. Every figure it gives you carries a receipt: the governed metric, the exact SQL, and a replayable hash. On the Shopify App Store, built in public.">
 <meta property="og:url" content="https://tilltrend.app/">
 <meta property="og:image" content="https://tilltrend.app/og-image.png">
 <meta property="og:image:width" content="1600">
 <meta property="og:image:height" content="900">
-<meta property="og:image:alt" content="Tilltrend: every number comes with a receipt.">
+<meta property="og:image:alt" content="Tilltrend: every answer shows its work.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="tilltrend-favicon.svg">
 <link rel="stylesheet" href="style.css">
@@ -39,7 +39,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
     <a href="changelog.html">Changelog</a>
     <a href="about.html">About</a>
     <a href="support.html">Support</a>
-    <a class="cta" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Early access</a>
+    <a class="cta" href="https://apps.shopify.com/tilltrend">Install on Shopify</a>
   </nav>
 </header>
 
@@ -84,7 +84,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
       </svg>
       <div class="cine-copy">
         <div class="cine-word">Tilltrend</div>
-        <p class="cine-tag">Every number comes with a receipt.</p>
+        <p class="cine-tag">Every answer shows its work.</p>
       </div>
     </div>
     <div class="cine-hint" aria-hidden="true"></div>
@@ -95,14 +95,14 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
 
 <section class="home-hero wrap">
   <h1><span>The AI analyst for your store.</span> <span>Every answer shows its work.</span></h1>
-  <p class="tagline">Ask questions about your store in plain language. Every number
-  in the answer carries a receipt: the governed metric definition, the exact SQL,
+  <p class="tagline">Ask questions about your store in plain language. Every figure
+  Ask gives you carries a receipt: the governed metric definition, the exact SQL,
   and a hash you can replay without the AI in the loop.</p>
   <div class="actions">
-    <a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a>
+    <a class="cta big" href="https://apps.shopify.com/tilltrend">Install on Shopify</a>
     <a class="link-more" href="sample-report.html">See a full sample report &rarr;</a>
   </div>
-  <p class="status">Pre-launch &middot; built in public</p>
+  <p class="status">On the Shopify App Store &middot; built in public</p>
 </section>
 
 <section class="section wrap" aria-labelledby="answer-h">
@@ -111,7 +111,7 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
     <p>The same question, answered twice. The chat answer is an illustration of
     a number with nothing behind it. The Tilltrend answer is not a mockup: it
     comes from one real run of the product answering "What was total revenue?",
-    executed 2026-07-26 against the demo warehouse.</p>
+    executed <time class="date-whole">2026-11-17</time> against the demo warehouse.</p>
   </div>
 
   <div class="versus">
@@ -134,26 +134,26 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches)
       <div class="answer-cards" aria-label="What the app shows first">
         <div class="acard">
           <div class="acard-head"><span class="acard-metric">Total revenue</span>
-          <span class="acard-scope">all time</span></div>
+          <span class="acard-scope">no date filter</span></div>
           <div class="acard-big">$29,356,250.00</div>
-          <ul class="acard-caveats"><li>Gross revenue only: the source has no cancellation/refund data.</li></ul>
+          <ul class="acard-caveats"><li>Revenue after discounts: refunds are not subtracted and cancelled orders stay in.</li></ul>
         </div>
         <div class="acard acard-interp">
           <div class="acard-head"><span class="acard-metric">What this means</span>
-          <span class="acard-scope">model prose, not receipted</span></div>
-          <p class="acard-prose">Total revenue across all time was 29,356,250. This figure represents gross revenue only; the underlying source lacks cancellation and refund data, so the net revenue after adjustments may differ from this amount.</p>
+          <span class="acard-scope">written by the AI, not part of the receipt</span></div>
+          <p class="acard-prose">Total revenue was 29,356,250. This represents revenue after discounts; the figure includes cancelled orders and does not deduct refunds.</p>
         </div>
       </div>
       <p class="vs-note">Two renderings of one stored value: the card formats it
       as money at the display layer, the receipt keeps the exact number.</p>
       <div class="slip-wrap">
         <div class="slip" role="group" aria-label="The receipt behind this answer">
-          <div class="slip-head"><strong>RECEIPT</strong><span class="slip-id">rcp_1e047258878c43cba3b21d673a7ccbc5</span></div>
+          <div class="slip-head"><strong>RECEIPT</strong><span class="slip-id">rcp_7998c101b59b4301a29132c719f414d0</span></div>
           <dl class="slip-lines">
             <div><dt>metric</dt><dd>total_revenue</dd></div>
-            <div><dt>scope</dt><dd>all time</dd></div>
+            <div><dt>scope</dt><dd>no date filter</dd></div>
             <div><dt>value</dt><dd>29,356,250</dd></div>
-            <div><dt>hash</dt><dd>sha256:2bb5a5c95744d84e</dd></div>
+            <div><dt>hash</dt><dd>sha256:26ff1aad7b2136ec</dd></div>
           </dl>
           <div class="slip-sql">
             <span class="slip-k">The governed SQL behind 29,356,250</span>
@@ -182,7 +182,7 @@ FROM gold.fact_sales f</code></pre>
       It never writes the SQL and never touches your data directly.</p>
     </div>
     <div>
-      <h3>Every answer carries a receipt</h3>
+      <h3>Every figure Ask gives you carries a receipt</h3>
       <p>Answers come in two visible sections: <strong>receipted facts</strong>
       (numbers produced by governed SQL, each with a receipt id and hash) and
       <strong>interpretation</strong> (model prose, clearly labeled as not
@@ -210,7 +210,7 @@ FROM gold.fact_sales f</code></pre>
       statement the deterministic layer executes for <code>total_revenue</code> and
       stores in the receipt's <code>execution</code> block. The model only chose
       the metric; it never writes SQL. Tilltrend's Ask page shows this beneath
-      every answer.</p>
+      every figure it gives you.</p>
       <p>The 29,356,250 is a property of the demo dataset, not a revenue claim about
       this product or anyone's business. Replaying that receipt re-executes the same
       governed SQL with no model involved and grades the result. Observed verdict:
@@ -221,21 +221,21 @@ FROM gold.fact_sales f</code></pre>
     <div class="term">
       <div class="label">Real output &middot; demo dataset (public training data, 2010&ndash;2014 bike sales, not real merchants)</div>
 <pre>question: What was total revenue?
-turn:     turn_7333a781e9ba   mode: model   model: claude-haiku-4-5-20251001
+turn:     turn_fab1d16b8a8c   mode: model   model: claude-haiku-4-5-20251001
 
 RECEIPTED FACTS
 ===============
-(1) [run_metric] total_revenue (all time)  &lt;rcp_1e047258878c43cba3b21d673a7ccbc5 | sha256:2bb5a5c95744d84e&gt;
+(1) [run_metric] total_revenue (no date filter)  &lt;rcp_7998c101b59b4301a29132c719f414d0 | sha256:26ff1aad7b2136ec&gt;
   total_revenue = 29,356,250
-  caveat: Gross revenue only: the source has no cancellation/refund data.
+  caveat: Revenue after discounts: refunds are not subtracted and cancelled orders stay in.
 
 INTERPRETATION (model, not receipted)
 =====================================
-| Total revenue across all time was 29,356,250. This figure represents gross revenue only; the underlying source lacks cancellation and refund data, so the net revenue after adjustments may differ from this amount.
+| Total revenue was 29,356,250. This represents revenue after discounts; the figure includes cancelled orders and does not deduct refunds.
 
 receipts:
-  rcp_1e047258878c43cba3b21d673a7ccbc5 | sha256:2bb5a5c95744d84e
-replay:   python app\scripts\replay.py rcp_1e047258878c43cba3b21d673a7ccbc5
+  rcp_7998c101b59b4301a29132c719f414d0 | sha256:26ff1aad7b2136ec
+replay:   python app\scripts\replay.py rcp_7998c101b59b4301a29132c719f414d0
 postcheck: PASS (attempts=1)</pre>
     </div>
   </div>
@@ -244,8 +244,8 @@ postcheck: PASS (attempts=1)</pre>
 <section class="honest-band" aria-labelledby="honest-h">
   <div class="wrap">
     <h2 id="honest-h">Where this is honest by construction</h2>
-    <p class="statement"><strong>Tilltrend is pre-launch.</strong> No merchant counts, no testimonials,
-    no revenue-lift percentages: we have none, so none appear on this site. What
+    <p class="statement"><strong>Tilltrend is new.</strong> No merchant counts, no testimonials,
+    no revenue-lift percentages appear on this site. What
     we do have is a working product whose every claim is reproducible: the
     <a href="evidence.html">evidence page</a> lists each one with the exact command
     and the observed result, and the <a href="changelog.html">changelog</a> records
@@ -255,13 +255,13 @@ postcheck: PASS (attempts=1)</pre>
 
 <section class="closer" aria-labelledby="access-h">
   <div class="wrap">
-    <h2 id="access-h">Early access</h2>
-    <p>We're looking for a small number of merchants to shape the product. The
-    Shopify app is real and running: install is by private link today, and the
-    public App Store listing waits on our legal pack. If "an analyst that shows
-    its work" sounds like what your store is missing, write to us. A human reads
-    every mail.</p>
-    <a class="cta big" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Request early access</a>
+    <h2 id="access-h">Install Tilltrend</h2>
+    <p>Tilltrend is on the Shopify App Store. If "an analyst that shows its work"
+    sounds like what your store is missing, install it from the listing. We're
+    also looking for a small number of merchants to shape the product: if that's
+    you, <a href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">write to us</a>.
+    A human reads every mail.</p>
+    <a class="cta big" href="https://apps.shopify.com/tilltrend">Install on Shopify</a>
   </div>
 </section>
 
@@ -269,7 +269,7 @@ postcheck: PASS (attempts=1)</pre>
 
 <footer class="site">
   <img class="footer-logo" src="tilltrend-lockup-dark-steel.svg" alt="Tilltrend" width="180" height="75">
-  <p><strong>Tilltrend is pre-launch.</strong> Nothing on this site claims traction
+  <p><strong>Tilltrend has been on the Shopify App Store since November 2026.</strong> Nothing on this site claims traction
   we don't have. Every product claim is reproducible: commands and observed
   results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
   a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
@@ -280,7 +280,7 @@ postcheck: PASS (attempts=1)</pre>
     <a href="changelog.html">Changelog</a>
     <a href="about.html">About</a>
     <a href="support.html">Support</a>
-    <a href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Contact / early access</a>
+    <a href="mailto:contact@tilltrend.app?subject=Tilltrend">Contact</a>
     <a href="privacy.html">Privacy</a>
     <a href="terms.html">Terms</a>
     <a href="dpa.html">DPA</a>

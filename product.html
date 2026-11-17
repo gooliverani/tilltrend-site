@@ -13,7 +13,7 @@
 <meta property="og:image" content="https://tilltrend.app/og-image.png">
 <meta property="og:image:width" content="1600">
 <meta property="og:image:height" content="900">
-<meta property="og:image:alt" content="Tilltrend: every number comes with a receipt.">
+<meta property="og:image:alt" content="Tilltrend: every answer shows its work.">
 <meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/svg+xml" href="tilltrend-favicon.svg">
 <link rel="stylesheet" href="style.css">
@@ -32,7 +32,7 @@
     <a href="changelog.html">Changelog</a>
     <a href="about.html">About</a>
     <a href="support.html">Support</a>
-    <a class="cta" href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Early access</a>
+    <a class="cta" href="https://apps.shopify.com/tilltrend">Install on Shopify</a>
   </nav>
 </header>
 
@@ -68,52 +68,53 @@ revenue", "Which countries drive revenue?". What happens next is deliberately
 split in two:</p>
 
 <ol>
-  <li><strong>The model chooses, it never computes.</strong> The AI proposes a
-  tool call against a closed set of governed metrics (revenue, orders, AOV,
-  monthly revenue, cohort retention, customer LTV, product performance, repeat
-  rate). Invalid proposals are rejected and audited; the model gets one chance
-  to correct itself, then the system refuses deterministically.</li>
-  <li><strong>The deterministic layer computes.</strong> The metric's canonical
-  SQL (written down once, in a governed definitions document) runs against the
-  warehouse over a read-only connection. The result is written into a receipt:
-  the SQL, the parameters, the rows, the warehouse build identity, and content
-  hashes over all of it.</li>
+  <li><strong>The AI chooses, it never calculates.</strong> The AI picks from a
+  fixed list of figures Tilltrend has written rules for (revenue, orders, average
+  order value, monthly revenue, cohort retention, customer lifetime value, product
+  performance, repeat rate). A pick that breaks the rules is rejected and logged;
+  the AI gets one chance to correct itself, then Tilltrend stops and asks you what
+  you meant.</li>
+  <li><strong>Tilltrend's code does the calculating.</strong> The query for that
+  figure, written down once in Tilltrend's rules, runs on your store's data in
+  Tilltrend over a read-only connection. The result is written into a receipt: the
+  query, its inputs, the rows, which build of your data it ran on, and a hash of
+  all of it, a fingerprint that changes if anything in it does.</li>
 </ol>
 
-<p>The answer you see has two visibly separate sections. <strong>RECEIPTED
-FACTS</strong> is rendered by code directly from the stored receipts. The model
-cannot edit it. <strong>INTERPRETATION</strong> is model prose, labeled "model,
-not receipted", and a post-check verifies every number in it appears in the
-receipted facts. If the model invents a number, the draft is rejected and
-regenerated; two strikes and a deterministic fallback ships instead. This has
-caught a real violation in testing. The bad draft never shipped.</p>
+<p>The answer you see keeps two parts visibly apart. <strong>The figures</strong>
+are drawn by code directly from the stored receipts, and the AI cannot edit them.
+<strong>The explanation</strong>, which you ask for with the Explain button, is the
+AI's own writing and is labeled "written by the AI, not part of the receipt". The
+figures in it are checked against the receipts before you see it. If a figure isn't
+in the receipts, the draft is rejected and rewritten; fail twice and Tilltrend's
+own note appears instead. This has caught a real violation in testing. The bad
+draft never shipped.</p>
 
 <h2 id="receipts">Receipts and replay, simply</h2>
 
-<p>Every receipted fact carries a receipt id and a hash, like
+<p>Every figure in an answer carries a receipt id and a hash, like
 <code>rcp_c60c017f43c346328383448a66088735 | sha256:371834e1a0a6100a</code>.
-Replaying a receipt re-executes its exact SQL against the warehouse,
-<em>no model anywhere in the loop</em>, and grades the result:</p>
+Replaying a receipt runs its exact query again, <em>with no AI anywhere in the
+loop</em>, and grades the result:</p>
 
 <table>
   <tr><th>Verdict</th><th>Meaning</th></tr>
-  <tr><td><strong>MATCH</strong></td><td>Same SQL, same data, same numbers. The answer still holds.</td></tr>
-  <tr><td><strong>STALE</strong></td><td>The warehouse content changed since the receipt was written; the receipt was honest for the data it saw.</td></tr>
-  <tr><td><strong>FAIL</strong></td><td>The receipt does not survive re-execution, including receipts someone edited to lie coherently.</td></tr>
-  <tr><td><strong>ERROR</strong></td><td>The receipt file is malformed; the grader refuses to grade rather than guess.</td></tr>
+  <tr><td><strong>MATCH</strong></td><td>Same query, same data, same numbers. The answer still holds.</td></tr>
+  <tr><td><strong>STALE</strong></td><td>Your store's data changed since the receipt was written; the receipt was honest for the data it saw.</td></tr>
+  <tr><td><strong>FAIL</strong></td><td>The receipt doesn't hold up when run again, including receipts someone edited to lie coherently.</td></tr>
+  <tr><td><strong>ERROR</strong></td><td>The receipt file is damaged; Tilltrend refuses to grade it rather than guess.</td></tr>
 </table>
 
-<p>This is tested adversarially: the verification gate doctors receipts five
-different ways (edit the rows, recompute the hashes coherently, tamper with
-derived values, delete caveats) and asserts each forgery fails with exactly the
-predicted signature. Commands and observed results are on the
+<p>This is tested on purpose: our checks forge receipts five different ways (edit
+the rows, recompute the hashes to match, change the worked-out values, delete
+caveats) and confirm each forgery fails in exactly the way predicted. Commands and
+observed results are on the
 <a href="evidence.html">evidence page</a>.</p>
 
 <h2 id="refusal">Honest refusal</h2>
 
-<p>When the data to answer a question doesn't exist, Tilltrend says so, in
-governed text quoted from the metric documentation, not model improvisation.
-Verbatim, from a real run on 2026-06-13; re-run 2026-07-26, byte-identical:</p>
+<p>When the data to answer a question doesn't exist, Tilltrend says so, in its
+own written words, not the AI's. Verbatim, from a real run on <time class="date-whole">2026-10-31</time>:</p>
 
 <div class="term">
   <div class="label">Real output &middot; <code>python app\scripts\ask.py "Show me the conversion funnel"</code></div>
@@ -123,30 +124,30 @@ Verbatim, from a real run on 2026-06-13; re-run 2026-07-26, byte-identical:</p>
 
 REFUSAL (governed text, not model prose)
 ========================================
-Not yet supported (session_funnel), per app/docs/metrics.md: visits → product views → add-to-cart → checkout → purchase conversion. Requires an event-stream connector (storefront analytics). No proxy is acceptable: order data alone cannot recover pre-purchase steps.
+Not yet supported: your store traffic and conversion funnel, from a first visit through product views, add to cart and checkout to a purchase. Tilltrend sees your orders, not what shoppers do before they buy, so it won't guess.
 
-governed source: app/docs/metrics.md</pre>
+source: Tilltrend's written rules for its numbers. These aren't the AI's words.</pre>
 </div>
 
-<p>No proxy metric, no plausible-sounding guess. Order data alone cannot recover
-pre-purchase funnel steps, so the product refuses rather than approximates.</p>
+<p>No stand-in figure, no plausible-sounding guess. Orders alone can't show what
+shoppers did before they bought, so Tilltrend refuses rather than approximates.</p>
 
 <h2 id="app">The admin app today</h2>
 
-<p>Eight server-rendered pages exist now. Every number on them is queried live
-at render time using the canonical SQL from the governed metric definitions,
-and each KPI is footnoted with its metric id.</p>
+<p>Eight pages exist now. Every figure on them is worked out by Tilltrend's written
+rules each time the page opens, from your store's data as of the last sync, and
+each headline figure has a footnote naming the metric behind it.</p>
 
 <table>
   <tr><th>Page</th><th>What it shows</th></tr>
-  <tr><td><strong>Overview</strong></td><td>Headline KPIs (total revenue, orders, AOV, repeat-rate split, LTV distribution) plus a build-identity panel: which warehouse build produced these numbers, over what date window.</td></tr>
-  <tr><td><strong>Trends</strong></td><td>Sales over time at the grain you pick (day, week, month, quarter, or year) as a line/area chart with a running total, a trailing moving average, and period-over-period (and year-over-year) change. Built on governed time-series views (window functions over the fact table); a period with no sales reads as an honest 0, partial edge periods are flagged, and a change with no prior period says so rather than inventing one.</td></tr>
-  <tr><td><strong>Products</strong></td><td>Top products by revenue (server-side SVG bar chart) with a units / orders / distinct-buyers table and a category-mix breakdown, each figure from the governed product-performance metric.</td></tr>
-  <tr><td><strong>Cohorts</strong></td><td>The full cohort-retention matrix; sparse cells are labeled "zero, not missing", with the governed cohort definition quoted on the page.</td></tr>
-  <tr><td><strong>Ask</strong></td><td>A chat surface. An answer opens with a readable card built from the stored receipt: a single figure shown large, a multi-row result as a real table, money in your store's currency. The exact audited text sits one click away, unchanged to the character, and beneath every answer: <strong>the exact SQL the deterministic layer ran</strong>, a per-receipt replay command, and the post-check status. The model's optional interpretation stays visibly tagged as model prose.</td></tr>
-  <tr><td><strong>Export</strong></td><td>The BI export: a zip of governed CSVs with a data dictionary that documents the table joins, plus a personal API token that opens exactly one read-only endpoint for BI tools.</td></tr>
-  <tr><td><strong>Report</strong></td><td>The Store Data Health-Check as a printable page, one click from the dashboard (Ctrl+P to PDF): the same governed report as the <a href="sample-report.html">public sample</a>, rendered on your own store.</td></tr>
-  <tr><td><strong>Audit</strong></td><td>The append-only audit log: every query, every tool call, every rejection and refusal, with the warehouse build id on each row.</td></tr>
+  <tr><td><strong>Overview</strong></td><td>Headline figures (total revenue, orders, average order value, repeat-rate split, the spread of customer lifetime value) plus a panel showing which build of your data produced them, over what dates.</td></tr>
+  <tr><td><strong>Trends</strong></td><td>Sales over time at the grain you pick (day, week, month, quarter, or year) as a line and area chart with a running total, a moving average, and the change from the period before and from the same period last year. A period with no sales reads as an honest 0, a part period at either end is flagged, and a change with no earlier period says so rather than inventing one.</td></tr>
+  <tr><td><strong>Products</strong></td><td>Top products by revenue as a bar chart, with a table of units, orders and distinct buyers and a breakdown by category.</td></tr>
+  <tr><td><strong>Cohorts</strong></td><td>The full cohort-retention table; empty cells are labeled "zero, not missing", with the cohort definition quoted on the page.</td></tr>
+  <tr><td><strong>Ask</strong></td><td>A chat surface. An answer opens with a readable card built from the stored receipt: a single figure shown large, a multi-row result as a real table, money in your store's currency. The exact audited text sits one click away, unchanged to the character. Beneath an answer with figures sit <strong>the exact SQL Tilltrend ran</strong> and its receipt, which you can download as a CSV. The AI's optional explanation stays visibly labeled as the AI's, with a line saying whether its figures passed the check.</td></tr>
+  <tr><td><strong>Export</strong></td><td>The BI export: a zip of CSVs with a data dictionary that shows how the tables join, plus a personal API token that opens exactly one read-only endpoint for BI tools.</td></tr>
+  <tr><td><strong>Report</strong></td><td>The Store Data Health-Check as a printable page, one click from the dashboard (Ctrl+P to PDF): the same report as the <a href="sample-report.html">public sample</a>, rendered on your own store.</td></tr>
+  <tr><td><strong>Audit</strong></td><td>The audit log, which is only ever added to: every question, every step the AI proposed, every rejection and refusal, with the build of your data on each row.</td></tr>
 </table>
 
 <div class="honest">
@@ -160,15 +161,11 @@ and each KPI is footnoted with its metric id.</p>
 
 <ul>
   <li><strong>Session funnel</strong> (visits → views → cart → checkout →
-  purchase): requires an event-stream connector. Refused honestly today, as
-  shown above.</li>
-  <li><strong>Promo performance</strong> (discount uptake, promo ROI): requires
-  a promotions/discounts source; the current demo extract has none.</li>
-  <li><strong>A public App Store listing</strong>: the Shopify connector itself
-  exists and powers the live app (OAuth install, nightly refresh, on-demand
-  sync); what does not exist yet is the public listing. Installs are by private
-  link today, and the listing waits on our legal pack (privacy and terms). We
-  won't publish it before those are real.</li>
+  purchase): Tilltrend sees your orders, not what shoppers do before they buy.
+  Refused honestly today, as shown above.</li>
+  <li><strong>Promo performance</strong> (how each discount code performed):
+  revenue takes every discount off, but Tilltrend doesn't keep which discount it
+  was.</li>
 </ul>
 
 <h2 id="architecture">Architecture, for technical readers</h2>
@@ -213,7 +210,7 @@ claim, with its command, on the evidence page</a>.</p>
 
 <footer class="site">
   <img class="footer-logo" src="tilltrend-lockup-dark-steel.svg" alt="Tilltrend" width="180" height="75">
-  <p><strong>Tilltrend is pre-launch.</strong> Nothing on this site claims traction
+  <p><strong>Tilltrend has been on the Shopify App Store since November 2026.</strong> Nothing on this site claims traction
   we don't have. Every product claim is reproducible: commands and observed
   results on the <a href="evidence.html">evidence page</a>. Demo numbers come from
   a public training dataset (2010&ndash;2014 bike sales), not from real merchants.</p>
@@ -224,7 +221,7 @@ claim, with its command, on the evidence page</a>.</p>
     <a href="changelog.html">Changelog</a>
     <a href="about.html">About</a>
     <a href="support.html">Support</a>
-    <a href="mailto:contact@tilltrend.app?subject=Tilltrend%20early%20access">Contact / early access</a>
+    <a href="mailto:contact@tilltrend.app?subject=Tilltrend">Contact</a>
     <a href="privacy.html">Privacy</a>
     <a href="terms.html">Terms</a>
     <a href="dpa.html">DPA</a>
